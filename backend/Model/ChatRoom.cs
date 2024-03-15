@@ -14,6 +14,6 @@ namespace backend.Model
         public Admin Admin { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
-        public List<Message> Messages { get; set; }
+        public List<Message>? Messages { get; set; }
     }
 }

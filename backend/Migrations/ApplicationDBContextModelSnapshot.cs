@@ -51,13 +51,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "15194e84-1f45-4e31-a381-7a669695a31d",
+                            Id = "6ba1dc5f-79fb-49dd-aaf1-21675d1519b8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "48a3a575-2285-4f0b-9c2e-89f5563c4632",
+                            Id = "e595bb92-4a7b-4578-91ff-e04cdb69525d",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -934,19 +934,19 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Admin", "Admin")
                         .WithMany("ChatRooms")
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Product", "Product")
                         .WithMany("ChatRooms")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.User", "User")
                         .WithMany("ChatRooms")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -961,13 +961,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.ApplicationUser", "AppUser")
                         .WithMany("Comments")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -1010,13 +1010,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Product", "Product")
                         .WithMany("Feedbacks")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.User", "User")
                         .WithMany("Feedbacks")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -1040,13 +1040,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.ApplicationUser", "AppUser")
                         .WithMany("Likes")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Post", "Post")
                         .WithMany("Likes")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -1059,7 +1059,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.ChatRoom", "ChatRoom")
                         .WithMany("Messages")
                         .HasForeignKey("ChatRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ChatRoom");
@@ -1089,13 +1089,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.ApplicationUser", "AppUser")
                         .WithMany("Posts")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Community", "Community")
                         .WithMany("Posts")
                         .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -1108,13 +1108,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Product", "Product")
                         .WithMany("Purchases")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.User", "User")
                         .WithMany("Purchases")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -1157,12 +1157,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Course", "Course")
                         .WithMany("Sections")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Section", "ParentSection")
                         .WithMany("ChildSections")
-                        .HasForeignKey("ParentSectionId");
+                        .HasForeignKey("ParentSectionId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Course");
 
@@ -1174,13 +1175,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.ApplicationUser", "AppUser")
                         .WithMany("Views")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Post", "Post")
                         .WithMany("Views")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AppUser");
