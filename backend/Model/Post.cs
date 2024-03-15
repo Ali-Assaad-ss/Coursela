@@ -8,14 +8,14 @@ namespace backend.Model
 {
     public class Post
     {
-        public string PostId { get; set; }
-        public string PostTitle { get; set; }
-        public DateTime PostDate { get; set; }
-        public string PostType { get; set; }
-        public string PostContent { get; set; }
-        public string PostImage { get; set; }
-        public string PostVideo { get; set; }
-        public int AppUserId { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public DateTime Date { get; set; }
+        public string Type { get; set; }
+        public string Content { get; set; }
+        public string Image { get; set; }
+        public string Video { get; set; }
+        public string AppUserId { get; set; }
         public ApplicationUser AppUser { get; set; }
         public bool IsPinned { get; set; }
         public List<Comment>? Comments { get; set; }

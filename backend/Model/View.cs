@@ -7,7 +7,8 @@ namespace backend.Model
 {
     public class View
     {
-        public int AppUserId { get; set; }
+        public int Id { get; set; }
+        public string AppUserId { get; set; }
         public ApplicationUser AppUser { get; set; }
         public int PostId { get; set; }
         public Post Post { get; set; }

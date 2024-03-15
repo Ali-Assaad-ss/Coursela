@@ -7,12 +7,12 @@ namespace backend.Model
 {
     public class Lesson
     {
-        public int LessonId { get; set; }
-        public string LessonTitle { get; set; }
-        public string LessonType { get; set; }
-        public string LessonContent { get; set; }
-        public string LessonVisibility { get; set; }
-        public Section LessonSection { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Type { get; set; }
+        public string Content { get; set; }
+        public string Visibility { get; set; }
+        public Section Section { get; set; }
         public int SectionId { get; set; }
     }
 }

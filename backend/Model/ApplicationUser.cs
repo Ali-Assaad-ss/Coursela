@@ -9,7 +9,6 @@ namespace backend.Model
 {
     public class ApplicationUser : IdentityUser
     {
-        public string? Role { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Password { get; set; }
@@ -19,7 +18,5 @@ namespace backend.Model
         public List<Like>? Likes { get; set; }
         public List<View>? Views { get; set; }
         public List<ChatRoom>? ChatRooms { get; set; }
-        public List<Product>? Products { get; set; }
-
     }
 }

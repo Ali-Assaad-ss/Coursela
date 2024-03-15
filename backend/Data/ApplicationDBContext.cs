@@ -34,7 +34,6 @@ namespace backend.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<View> Views { get; set; }
-        public DbSet<AppUserChatRoom> AppUserChatRooms { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<CommunityUser> CommunityUsers { get; set; }
 
@@ -51,6 +50,7 @@ namespace backend.Data
                     NormalizedName="USER"
                 },
             };
+
             builder.Entity<IdentityRole>().HasData(roles);
 
 
@@ -208,7 +208,7 @@ namespace backend.Data
 
             //lesson section relationship
             builder.Entity<Lesson>().
-            HasOne(l => l.LessonSection).
+            HasOne(l => l.Section).
             WithMany(s => s.Lessons).
             HasForeignKey(l => l.SectionId);
 
@@ -229,7 +229,7 @@ namespace backend.Data
             builder.Entity<Response>()
             .HasOne(r => r.Question)
             .WithMany(r => r.Responses)
-            .HasForeignKey(r => r.ResponseId);
+            .HasForeignKey(r => r.Id);
 
             //response User relationship
             builder.Entity<Response>()

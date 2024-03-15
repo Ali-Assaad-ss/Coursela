@@ -9,7 +9,7 @@ namespace backend.Model
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public int AppUserId { get; set; }
+        public string AppUserId { get; set; }
         public ApplicationUser AppUser { get; set; }
         public int PostId { get; set; }
         public Post Post { get; set; }

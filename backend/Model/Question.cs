@@ -7,7 +7,7 @@ namespace backend.Model
 {
     public class Question
     {
-
+        public int Id { get; set; }
         public string? QuestionType { get; set; }
         public float MaxScore { get; set; }
         public int ResponseId { get; set; }
