@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
-namespace Backend.Model
+namespace backend.Model
 {
-    public class User:IdentityUser
+    public class User:ApplicationUser
     {
-    
+        public List<Response>? Responses { get; set; }
+        public List<Purchase>? Purchases { get; set; }
+        public List<Feedback>? Feedbacks { get; set; }
+        public List<Booking>? Bookings { get; set; }
+        
     }
 }

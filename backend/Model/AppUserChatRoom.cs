@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 
 namespace backend.Model
 {
-    public class Like
+    public class AppUserChatRoom
     {
-        public int AppUserId { get; set; }
+        public int AppUserID { get; set; }
+        public int ChatRoomID { get; set; }
         public ApplicationUser AppUser { get; set; }
-        public int PostId { get; set; }
-        public Post Post { get; set; }
-    
+        public ChatRoom ChatRoom { get; set; }
     }
 }

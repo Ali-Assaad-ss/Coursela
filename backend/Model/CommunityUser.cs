@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Backend.Model
+namespace backend.Model
 {
-    public class ComunityUser
+    public class CommunityUser
     {
         public int UserId { get; set; }
         public int ComunityId { get; set; }
-        public User User { get; set; }
-        public Comunity Comunity { get; set; }
+        public ApplicationUser User { get; set; }
+        public Community Community { get; set; }
     }
 }

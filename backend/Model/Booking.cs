@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Backend.Model
+namespace backend.Model
 {
   public class Booking
   {
@@ -12,8 +12,8 @@ namespace Backend.Model
     public DateTime EndDate { get; set; }
     public int UserId { get; set; }
     public User User { get; set; }
-    public int AdminId { get; set; }
-    public User Admin { get; set; }
+    public int CoachingId { get; set; }
+    public Coaching Coaching { get; set; }
     
   }
 }

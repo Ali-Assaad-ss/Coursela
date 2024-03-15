@@ -4,12 +4,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Backend.Model
+namespace backend.Model
 {
     public class Post
     {
-        public int ComunityId {get;set;}
-        public Comunity Comunity { get; set; }
         public string PostId { get; set; }
         public string PostTitle { get; set; }
         public DateTime PostDate { get; set; }
@@ -17,11 +15,14 @@ namespace Backend.Model
         public string PostContent { get; set; }
         public string PostImage { get; set; }
         public string PostVideo { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
-        public bool IsPinned {get; set;}
-        public List<Comment> Comments { get; set; }
-        public List<Like> Likes { get; set; }
-    
+        public int AppUserId { get; set; }
+        public ApplicationUser AppUser { get; set; }
+        public bool IsPinned { get; set; }
+        public List<Comment>? Comments { get; set; }
+        public List<View>? Views { get; set; }
+        public List<Like>? Likes { get; set; }
+        public int CommunityId { get; set; }
+        public Community Community { get; set; }
+
     }
 }

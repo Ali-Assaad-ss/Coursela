@@ -1,16 +1,46 @@
-using Backend.Data;
-using Backend.Model;
+using backend.Data;
+using backend.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    // Define the security scheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // Add the security requirement to each operation that needs to be secured
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
@@ -18,28 +48,31 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 });
 
 
-builder.Services.AddIdentity<User,IdentityRole>(options=>{
-    options.Password.RequireLowercase=true;
-    options.Password.RequireUppercase=true;
-    options.Password.RequireNonAlphanumeric=true;
-    options.Password.RequiredLength=12;
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 12;
 }).AddEntityFrameworkStores<ApplicationDBContext>();
 
- builder.Services.AddAuthentication(options=>{
-options.DefaultAuthenticateScheme=
-options.DefaultChallengeScheme=
-options.DefaultForbidScheme=
-options.DefaultScheme=
-options.DefaultSignInScheme=
-options.DefaultSignOutScheme=JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options=>
+builder.Services.AddAuthentication(options =>
 {
-    options.TokenValidationParameters=new TokenValidationParameters{
-        ValidateIssuer=true,
-        ValidIssuer=builder.Configuration["JWT:Issuer"],
-        ValidateAudience=true,
-        ValidAudience=builder.Configuration["JWT:Audience"],
-        IssuerSigningKey=new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
+    options.DefaultAuthenticateScheme =
+    options.DefaultChallengeScheme =
+    options.DefaultForbidScheme =
+    options.DefaultScheme =
+    options.DefaultSignInScheme =
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
     };
 });
 
@@ -49,10 +82,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.OAuthClientId("swagger");
+        c.OAuthAppName("My API - Swagger");
+    });
 }
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

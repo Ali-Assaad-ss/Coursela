@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Backend.Model
+namespace backend.Model
 {
     public class Question
     {
@@ -11,6 +11,7 @@ namespace Backend.Model
         public string? QuestionType { get; set; }
         public float MaxScore { get; set; }
         public int ResponseId { get; set; }
+        public List<Response> Responses { get; set; }
         public string? CorrectResponse { get; set; }
         public int QuizId {get;set;}
         public Quiz Quiz {get;set;}
