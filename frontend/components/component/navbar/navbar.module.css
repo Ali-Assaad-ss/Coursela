@@ -1,0 +1,50 @@
+.navBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 2px solid #f1f1f1;
+  height: 60px;
+}
+.Link {
+  color: #666;
+}
+.MenuIcon {
+  display: none;
+}
+.Link:hover {
+  color: #000;
+}
+.MenuHidden {
+  display: flex;
+}
+.v {
+  display: none;
+}
+@media (max-width: 768px) {
+  .Menu {
+    padding: 5px;
+    flex-direction: column;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    height: 100%;
+    gap: 40px;
+    z-index: 1;
+  }
+  .h {
+    display: none;
+  }
+  .v {
+    display: flex;
+  }
+  .MenuIcon {
+    display: block;
+  }
+  .MenuHidden {
+    display: none;
+  }
+}
