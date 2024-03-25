@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function UserChat(props:any) {
   return (
-    <div className="flex align-middle">
+    <div className={`flex align-middle ${props.className}`}>
             <Avatar className="ml-2 mr-3 my-1">
               <AvatarImage src={props.image} />
             </Avatar>
