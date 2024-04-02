@@ -10,20 +10,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { SiCoursera } from "react-icons/si";
 import { CiFileOn } from "react-icons/ci";
 import { TbLivePhoto } from "react-icons/tb";
 import { RiBook3Line } from "react-icons/ri";
+import { CiSquarePlus } from "react-icons/ci";
+import { Button } from "@/components/ui/button";
 
 export default function New() {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
-        <Button>New Product</Button>
+      <AlertDialogTrigger asChild>
+        <Button className="py-7 mb-5">
+          <CiSquarePlus className="inline text-3xl" /> New Product
+          </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

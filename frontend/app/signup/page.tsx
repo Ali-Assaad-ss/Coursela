@@ -1,5 +1,5 @@
 'use client';
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/Coachingcalendar";
 import { useState } from "react";
 
 export default function Component() {

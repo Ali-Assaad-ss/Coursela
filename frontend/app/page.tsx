@@ -1,8 +1,9 @@
-import NavBar from "@/components/component/navbar/navBar";
+import Navbar from "@/components/component/navbar/Navbar";
+
 export default function MyApp() {
   return (
     <>
-landing page
+    <Navbar />
     </>
   );
 }

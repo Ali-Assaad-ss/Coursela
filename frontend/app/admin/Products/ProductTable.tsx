@@ -1,19 +1,4 @@
-"use client";
-import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import * as React from "react";
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons";
+"use client"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -25,20 +10,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@tanstack/react-table"
+ 
 import {
   Table,
   TableBody,
@@ -46,116 +19,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Alert } from "./alert";
-import { ArrowUpDown } from "lucide-react";
-
-const data: User[] = [
-  {
-    Id: "1",
-    Name: "ahmad",
-    Paid: 123,
-  },
-  {
-    Id: "2",
-    Name: "Kamal",
-    Paid: 233,
-  },
-  {
-    Id: "3",
-    Name: "Samir",
-    Paid: 43,
-  },
-];
-
-export type User = {
-  Id: string;
-  Name: string;
-  Paid: number;
-};
-
-export const columns: ColumnDef<User>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "Name",
-    header: "Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("Name")}</div>,
-  },
-  {
-    accessorKey: "Paid",
-    header: ({ column }) => {
-      return (
-        <Button
-        className="flex mx-auto"
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Total Paid
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="text-center">{row.getValue("Paid")}</div>,
-  },
-  {
-    id: "actions",
-    header: ()=><div className="flex justify-center">Actions</div>,
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-      const router= useRouter();
-      return (
-        <Button className="flex mx-auto" variant="default" onClick={()=>{router.push("/admin/Chat")}}>
-          Message
-        </Button>
-      );
-    },
-  },
-  {
-    id: "View",
-    header: ()=> <div className="flex justify-center">View</div>,
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-      return (
-        <Button className="flex mx-auto" variant="default">
-          View Details
-        </Button>
-      );
-    },
-  },
-];
-
-export function UserTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+} from "@/components/ui/table"
+import React from "react"
+import { Input } from "@/components/ui/input"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { ChevronDownIcon } from "lucide-react"
+ 
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+}
+ 
+export function ProductTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
+  )
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
+ 
   const table = useReactTable({
     data,
     columns,
@@ -173,20 +60,19 @@ export function UserTable() {
       columnVisibility,
       rowSelection,
     },
-  });
-
+  })
+ 
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter Names..."
-          value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("Name")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Button></Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -209,7 +95,7 @@ export function UserTable() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                );
+                )
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -229,7 +115,7 @@ export function UserTable() {
                             header.getContext()
                           )}
                     </TableHead>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
@@ -289,5 +175,5 @@ export function UserTable() {
         </div>
       </div>
     </div>
-  );
+  )
 }

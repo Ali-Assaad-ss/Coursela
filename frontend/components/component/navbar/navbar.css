@@ -1,0 +1,55 @@
+
+.linkcontainer{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+  justify-content: center;
+  height: 60px;
+}
+
+.Link {
+  color: #666;
+}
+.Link:hover {
+  color: #000;
+}
+
+
+@media (max-width: 768px) {
+  .open-sidebar{
+    position: relative;
+    top: 10px;
+    left:10px;
+    display: block;
+    cursor: pointer;
+    
+  }
+  .close-sidebar{
+    display: block;
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  .linkcontainer{
+    position: absolute;
+    top: 0px;
+    left:-200px;
+    flex-direction: column;
+    width: 200px;
+    justify-content: flex-start;
+    transition: left 0.5s;
+    height: 100vh;
+    border-right: 1px solid #b8b8b8;
+    background-color: #ffffff;
+  }
+  .NavLogo{
+    margin-top: -20px;
+    margin-inline: auto;
+  }
+  #sidebar-active:checked ~ .linkcontainer {
+    display: flex;
+    left:0px;
+    align-items: center;
+  }
+}
