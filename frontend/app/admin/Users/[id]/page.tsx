@@ -2,8 +2,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { columns } from "./UserProductColums";
-import getSortedProducts from "./SortedProduct";
 
 export default function page({id}) {
   const user = {
@@ -36,12 +34,14 @@ export default function page({id}) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="Products">
-        
+        <ProductsTab/>
         </TabsContent>
         <TabsContent value="Communities">
-          Change your password here.
+          <CommunitiesTab/>
         </TabsContent>
-        <TabsContent value="Invoices">Change your password here.</TabsContent>
+        <TabsContent value="Invoices">
+            <InvoicesTab/>
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -57,4 +57,7 @@ export function AvatarDemo() {
 }
 
 import { Switch } from "@/components/ui/switch";
-import { ProductTable } from "../../Products/ProductTable";
+import { ProductTable } from "../../Products/ProductTable";import ProductsTab from "./ProductsTab";
+import CommunitiesTab from "./CommunitiesTab";
+import InvoicesTab from "./InvoicesTab";
+

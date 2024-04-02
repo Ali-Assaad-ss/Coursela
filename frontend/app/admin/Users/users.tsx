@@ -76,26 +76,9 @@ export type User = {
 
 export const columns: ColumnDef<User>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    accessorKey: "Id",
+    header: "User Id",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("Id")}</div>,
   },
   {
     accessorKey: "Name",
@@ -186,7 +169,6 @@ export function UserTable() {
           }
           className="max-w-sm"
         />
-        <Button></Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

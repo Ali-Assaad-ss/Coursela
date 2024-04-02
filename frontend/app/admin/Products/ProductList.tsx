@@ -26,8 +26,12 @@ export const products = [
         price: 400,
         members: 40,
         type:"Course"
+    },
+    {
+        id:5,
+        name: "Product 4",
+        price: 400,
+        members: 40,
+        type:"Course"
     }
-
-
-
 ]
