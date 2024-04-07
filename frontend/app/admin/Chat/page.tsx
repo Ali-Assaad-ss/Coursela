@@ -7,7 +7,7 @@ import { VscSend } from "react-icons/vsc";
 
 export default function page() {
   return (
-    <div className="p-7 h-full">
+    <div className="p-7 h-[88vh]">
       <h1 className="text-2xl font-bold pb-5">Chats </h1>
       <div className="flex border-2 rounded-lg h-5/6">
         <div className="w-1/3 max-w-80 border-r-2">

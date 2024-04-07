@@ -1,5 +1,5 @@
-import NavBar from '@/components/component/navbar/Navbar'
-import React from 'react'
+import NavBar from "@/components/component/navbar/Navbar";
+import React from "react";
 
 export default function layout({
   children,
@@ -8,9 +8,10 @@ export default function layout({
 }>) {
   return (
     <>
-      <NavBar/>
-      {children}
+      <NavBar />
+      <div className="h-full pt-20">
+        <div> {children}</div>
+      </div>
     </>
-  )
+  );
 }
-

@@ -14,7 +14,7 @@ import {
 
 export default function Navbar() {
   return (
-    <nav className=" flex border-b">
+    <nav className=" flex border-b fixed w-full bg-white top-0 z-10">
       <input type="checkbox" name="" id="sidebar-active" className="hidden" />
       <label htmlFor="sidebar-active" className="open-sidebar hidden">
         <RxHamburgerMenu className="text-2xl" />
