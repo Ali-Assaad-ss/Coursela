@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function UserNavbar() {
+export default function Navbar() {
   return (
     <nav className=" flex border-b fixed w-full bg-white top-0 z-10">
       <input type="checkbox" name="" id="sidebar-active" className="hidden" />
@@ -24,14 +24,20 @@ export default function UserNavbar() {
           <IoIosClose className="text-4xl"/>
         </label>
         <Logo className="w-44 mr-auto ml-10 NavLogo" />
-        <Link className="Link" href="/User/Products">
-          My Material
+        <Link className="Link" href="/admin/Products">
+          Products
         </Link>
-        <Link className="Link" href="/User/Communities">
-          My Communities
+        <Link className="Link" href="/admin/Users">
+          Users
         </Link>
-        <Link className="Link" href="/User/Chat">
+        <Link className="Link" href="/admin/Communities">
+          Communities
+        </Link>
+        <Link className="Link" href="/admin/Chat">
           Chat
+        </Link>
+        <Link className="Link" href="/admin/Sales">
+          Sales
         </Link>
         <div className="ml-auto"></div>
       </div>

@@ -1,4 +1,4 @@
-import NavBar from "@/components/component/AdminNavbar/Navbar";
+import NavBar from "@/components/component/navbar/Navbar";
 import React from "react";
 
 export default function layout({
@@ -10,7 +10,7 @@ export default function layout({
     <>
       <NavBar />
       <div className="h-full pt-20">
-        <div> {children}</div>
+        {children}
       </div>
     </>
   );

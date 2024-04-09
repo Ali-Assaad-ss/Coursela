@@ -30,7 +30,6 @@ import { FaFileDownload } from "react-icons/fa";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { IoImageOutline } from "react-icons/io5";
 import { MdOutlineDeleteForever } from "react-icons/md";
-import { FaRegEdit } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
 export default function Page() {
   const [lessons, setLessons] = useState([
