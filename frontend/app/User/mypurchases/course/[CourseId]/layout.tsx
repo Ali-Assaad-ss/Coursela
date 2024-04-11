@@ -76,7 +76,7 @@ export default function page({ children }) {
   return (
     <div className="flex gap-10 h-full p-3">
       <div className="flex-[25%] border-r-4">
-        <div className="text-lg font-bold text-center mt-3">{course.title}</div>
+        <div className="text-lg font-bold text-center mt-3 px-2">{course.title}</div>
         <ScrollArea className="h-5/6">
           {course.lessons.map((lesson) => {
             return <Lesson lesson={lesson} />;

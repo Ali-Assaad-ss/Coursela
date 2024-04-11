@@ -10,7 +10,7 @@ export default function layout({
     <>
       <NavBar />
       <div className="h-full pt-20">
-        <div> {children}</div>
+        {children}
       </div>
     </>
   );

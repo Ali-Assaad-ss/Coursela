@@ -24,11 +24,11 @@ export default function UserNavbar() {
           <IoIosClose className="text-4xl"/>
         </label>
         <Logo className="w-44 mr-auto ml-10 NavLogo" />
-        <Link className="Link" href="/User/Products">
-          My Material
+        <Link className="Link" href="/User/Mypurchases">
+          My Purchases
         </Link>
         <Link className="Link" href="/User/Communities">
-          My Communities
+          Communities
         </Link>
         <Link className="Link" href="/User/Chat">
           Chat

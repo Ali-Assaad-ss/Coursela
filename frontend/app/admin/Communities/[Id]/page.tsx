@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import React from "react";
-import UserChat from "../../Chat/UserChat";
+import UserChat from "../../chat/UserChat";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa";

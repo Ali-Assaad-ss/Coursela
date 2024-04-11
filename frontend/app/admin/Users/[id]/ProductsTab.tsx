@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { products } from "../../Products/ProductList";
+import { products } from "../../products/ProductList";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,

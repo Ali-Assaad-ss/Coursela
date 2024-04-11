@@ -1,3 +1,5 @@
+import { Checkbox } from "@/components/ui/checkbox";
+
 export function TextLesson() {
   let Lesson = {
     id: 1,
@@ -11,7 +13,8 @@ export function TextLesson() {
 
   return (
     <div>
-      <div className="text-2xl font-bold ml-2 my-4 ">Introduction</div>
+      <div className="flex justify-between items-center"><div className="text-2xl font-bold ml-2 my-4 ">{Lesson.title}</div> <div className="flex items-center gap-1"><Checkbox />Mark Complete</div> </div>
+
       <div className="ml-3 text-xl">{Lesson.text}</div>
     </div>
   );

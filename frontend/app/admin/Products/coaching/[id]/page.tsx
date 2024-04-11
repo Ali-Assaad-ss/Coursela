@@ -68,7 +68,7 @@ export default function page() {
   );
 }
 
-function Interval({}) {
+export function Interval({}) {
   return (
     <div className="flex">
       <input className="border rounded-md p-2" type="time" />
