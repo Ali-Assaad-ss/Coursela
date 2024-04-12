@@ -3,6 +3,7 @@ import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import TipTap from "../tiptap/TipTap";
 
 export default function page() {
   return (
@@ -18,10 +19,11 @@ export default function page() {
     </div>
     <div className="flex">
       <p className="text-xl">Content</p>
-      <Textarea
-        className="w-[80%] ml-auto h-56"
-        placeholder="Enter the Content here"
-      />
+      <div
+        className="w-[80%] ml-auto"
+      >
+        <TipTap/>
+      </div>
     </div>
     <div className="flex gap-10 text-xl">
       Visibility <Switch />
