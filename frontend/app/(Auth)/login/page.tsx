@@ -56,7 +56,7 @@ export default function Component() {
             />
           </div>
           <div className="flex flex-col gap-6 justify-center p-10 items-center w-full md:w-auto">
-            <div className="flex items-center border rounded-sm pl-2 p-1">
+            <div className="flex gap-1 items-center border rounded-sm pl-2 p-1">
               <MdOutlineEmail className="fill-slate-500" />
               <Input
                 placeholder="Username or Email"
@@ -65,7 +65,7 @@ export default function Component() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="flex items-center border rounded-sm pl-2 p-1">
+            <div className="flex gap-1 items-center border rounded-sm pl-2 p-1">
               <RiLockPasswordLine className="fill-slate-500" />
               <Input
                 placeholder="Password"
