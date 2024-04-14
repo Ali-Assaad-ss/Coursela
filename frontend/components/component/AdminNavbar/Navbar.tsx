@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   return (
@@ -22,7 +23,7 @@ export default function Navbar() {
       </label>
       <div className="linkcontainer z-50">
         <label htmlFor="sidebar-active" className="close-sidebar hidden">
-          <IoIosClose className="text-4xl"/>
+          <IoIosClose className="text-4xl" />
         </label>
         <Logo className="w-44 mr-auto ml-10 NavLogo" />
         <Link className="Link" href="/admin/Products">
@@ -42,25 +43,32 @@ export default function Navbar() {
         </Link>
         <div className="ml-auto"></div>
       </div>
-        <ProfileDropDown className="ml-auto mr-5 my-1 " />
+      <ProfileDropDown className="ml-auto mr-5 my-1 " />
     </nav>
   );
 }
 
-function ProfileDropDown({className}) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className={className}>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem onClick={()=>localStorage.setItem("token","")}>Logout</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-  
+function ProfileDropDown({ className }) {
+  const router = useRouter();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className={className}>
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            document.cookie = `JWT=;path=/;max-age=0`;
+            router.push("/login");
+          }}
+        >
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
