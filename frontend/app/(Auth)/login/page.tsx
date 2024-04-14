@@ -5,13 +5,23 @@ import { Input } from "@/components/ui/input";
 import { MdOutlineEmail } from "react-icons/md";
 import { useState } from "react";
 import Logo from "@/components/svg/Logo";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
+  const router= useRouter();
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
-
+  const [error, setError] = useState("");
   const login = async () => {
-    await fetch("/api/login", {
+    if (!email) {
+      setError("Email is required.");
+      return;
+    } else if (!password) {
+      setError("Password is required.");
+      return;
+    }
+
+    const response = await fetch("/api/admin/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,6 +31,15 @@ export default function Component() {
         password: password,
       }),
     });
+    if (response.ok) {
+      const data = await response.json();
+      const token = data.token; // Assuming the token is returned in the response data
+      router.push("/admin");
+      //save the token in the cookie
+      document.cookie = `JWT=${token};path=/;max-age=604800`;
+    } else if (response.status ===401) {
+      setError("Invalid email or password.");
+    }
   };
 
   return (
@@ -40,8 +59,10 @@ export default function Component() {
             <div className="flex items-center border rounded-sm pl-2 p-1">
               <MdOutlineEmail className="fill-slate-500" />
               <Input
-                placeholder="Email"
+                placeholder="Username or Email"
                 className="focus-visible:ring-transparent border-0"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="flex items-center border rounded-sm pl-2 p-1">
@@ -49,10 +70,20 @@ export default function Component() {
               <Input
                 placeholder="Password"
                 className="focus-visible:ring-transparent border-0"
+                type="password"
+                value={password}
+                onChange={(e) => setpassword(e.target.value)}
               />
             </div>
-            <Button className="w-1/4 md:w-1/2">Login</Button>
+            <Button className="w-1/4 md:w-1/2" onClick={login}>
+              Login
+            </Button>
           </div>
+          {error && (
+            <div className="absolute bottom-0 bg-red-500 text-white p-2 w-full text-center">
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>

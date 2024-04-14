@@ -32,20 +32,20 @@ namespace backend.Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Email.ToLower());
 
             if (user == null) return Unauthorized("Invalid username!");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
-
+            var userRoles = await _userManager.GetRolesAsync(user);
             return Ok(
                 new NewUserDto
                 {
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = _tokenService.CreateTokenAsync(user, userRoles)
                 }
             );
         }
@@ -61,7 +61,7 @@ namespace backend.Controller
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var User = new User
+                var user = new User
                 {
                     UserName = registerDto.Username,
                     Email = registerDto.Email,
@@ -69,19 +69,20 @@ namespace backend.Controller
                     LastName = registerDto.LastName
                 };
 
-                var createdUser = await _userManager.CreateAsync(User, registerDto.Password);
+                var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
 
                 if (createdUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(User, "User");
+                    var roleResult = await _userManager.AddToRoleAsync(user, "User");
                     if (roleResult.Succeeded)
                     {
+                        var userRoles = await _userManager.GetRolesAsync(user);
                         return Ok(
                             new NewUserDto
                             {
-                                UserName = User.UserName,
-                                Email = User.Email,
-                                Token = _tokenService.CreateToken(User)
+                                UserName = user.UserName,
+                                Email = user.Email,
+                                Token = _tokenService.CreateTokenAsync(user, userRoles)
                             }
                         );
                     }

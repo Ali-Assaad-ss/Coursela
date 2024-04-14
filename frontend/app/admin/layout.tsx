@@ -1,4 +1,6 @@
+"use client";
 import NavBar from "@/components/component/AdminNavbar/Navbar";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function layout({
@@ -6,6 +8,7 @@ export default function layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router= useRouter();
   return (
     <>
       <NavBar />

@@ -8,20 +8,67 @@ import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 
 export default function Component() {
-  const [email, setEmail] = useState("");
-  const [password, setpassword] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Password, setpassword] = useState("");
+  const [FirstName, setFirstName] = useState("");
+  const [LastName, setLastName] = useState("");
+  const [UserName, setUserName] = useState("");
+  const [error, setError] = useState("");
 
-  const login = async () => {
-    await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-    });
+  const register = async () => {
+    setError("");
+    if (!FirstName) setError("First name is required.");
+    else if (!LastName) setError("Last name is required.");
+    else if (!UserName) setError("Username is required.");
+    //passwrord checks
+    else if (Password.length < 4)
+      setError("Password must be at least 4 characters.");
+    else if (!/\W/.test(Password))
+      setError("Password must have at least one non-alphanumeric character.");
+    else if (!/\d/.test(Password))
+      setError("Password must have at least one digit ('0'-'9').");
+    else if (!/[A-Z]/.test(Password))
+      setError("Password must have at least one uppercase letter ('A'-'Z').");
+    else if (!Password) setError("Password is required.");
+    //email checks
+    else if (!Email) setError("Email is required.");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email))
+      setError("Email is invalid.");
+    if (error) return;
+
+    try {
+      const response = await fetch("/api/admin/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          FirstName: FirstName,
+          LastName: LastName,
+          UserName: UserName,
+          Email: Email,
+          Password: Password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.token; // Assuming the token is returned in the response data
+
+        // Save the token in local storage
+        localStorage.setItem("token", token);
+
+      } else if (response.status === 500) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          data.forEach((error) => {
+            setError(error.description);
+          });
+        }
+      }
+    } catch (error) {
+      // Handle fetch error
+    }
   };
 
   return (
@@ -29,7 +76,7 @@ export default function Component() {
       <div className="border w-[800px] h-[600px] relative">
         <div className="bg-blue-500 w-96 h-96 absolute -right-3 -top-3 -z-10 rounded-se-lg"></div>
         <div className="bg-blue-500 w-96 h-96 absolute -bottom-3 -left-3 -z-10 rounded-es-lg"></div>
-        <Logo className="absolute h-16 top-6 left-1/2 -translate-x-1/2"/>
+        <Logo className="absolute h-16 top-6 left-1/2 -translate-x-1/2" />
         <div className="bg-white h-full flex">
           <div className="w-7/12 hidden items-center md:flex">
             <img
@@ -37,30 +84,71 @@ export default function Component() {
               alt=""
             />
           </div>
-          <div className="flex flex-col gap-3 justify-center p-10 items-center w-full md:w-auto">
+          <div className="flex flex-col gap-3 justify-center p-10 pt-32 items-center w-full md:w-auto">
             <div className="flex items-center border rounded-sm pl-2 p-1">
               <BsPerson className="fill-slate-500" />
               <Input
-                placeholder="Full name"
+                placeholder="First name"
                 className="focus-visible:ring-transparent border-0"
+                value={FirstName}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                }}
               />
             </div>
             <div className="flex items-center border rounded-sm pl-2 p-1">
+              <BsPerson className="fill-slate-500" />
+              <Input
+                placeholder="Last name"
+                className="focus-visible:ring-transparent border-0"
+                value={LastName}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex items-center border rounded-sm pl-2 p-1 gap-1">
               <MdOutlineEmail className="fill-slate-500" />
               <Input
                 placeholder="Email"
                 className="focus-visible:ring-transparent border-0"
+                value={Email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
               />
             </div>
             <div className="flex items-center border rounded-sm pl-2 p-1">
+              <BsPerson className="fill-slate-500" />
+              <Input
+                placeholder="Username"
+                className="focus-visible:ring-transparent border-0"
+                value={UserName}
+                onChange={(e) => {
+                  setUserName(e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex items-center border rounded-sm pl-2 p-1 ">
               <RiLockPasswordLine className="fill-slate-500" />
               <Input
                 placeholder="Password"
                 className="focus-visible:ring-transparent border-0"
+                value={Password}
+                onChange={(e) => {
+                  setpassword(e.target.value);
+                }}
               />
             </div>
-            <Button className="w-1/4 md:w-1/2" >Sign up</Button>
+            <Button className="w-1/4 md:w-1/2" onClick={register}>
+              Sign up
+            </Button>
           </div>
+          {error && (
+            <div className="absolute bottom-0 bg-red-500 text-white p-2 w-full text-center">
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>

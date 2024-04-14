@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using backend.Dto.User;
 using backend.Interface;
 using backend.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,28 +32,31 @@ namespace backend.Controller
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
-
-            if (user == null) return Unauthorized("Invalid username!");
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Email.ToLower());
+            if (user==null ) user =await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
+            if (user == null) return Unauthorized("Invalid username");
             if(user.GetType().Name != "Admin") return Unauthorized("Not an admin!");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             return Ok(
                 new NewUserDto
                 {
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = _tokenService.CreateTokenAsync(user,userRoles)
                 }
             );
         }
-
-
-
+        [Authorize(Roles = "Admin")]
+        [HttpGet("validate")]
+        public IActionResult Validate()
+        {
+            return Ok("Validated");
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateUserDto registerDto)
@@ -62,7 +66,7 @@ namespace backend.Controller
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var User = new Admin
+                var user = new Admin
                 {
                     UserName = registerDto.Username,
                     Email = registerDto.Email,
@@ -70,19 +74,20 @@ namespace backend.Controller
                     LastName = registerDto.LastName
                 };
 
-                var createdUser = await _userManager.CreateAsync(User, registerDto.Password);
+                var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
 
                 if (createdUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(User, "Admin");
+                    var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
                     if (roleResult.Succeeded)
                     {
+                        var userRoles = await _userManager.GetRolesAsync(user);
                         return Ok(
                             new NewUserDto
                             {
-                                UserName = User.UserName,
-                                Email = User.Email,
-                                Token = _tokenService.CreateToken(User)
+                                UserName = user.UserName,
+                                Email = user.Email,
+                                Token = _tokenService.CreateTokenAsync(user,userRoles)
                             }
                         );
                     }
@@ -101,5 +106,6 @@ namespace backend.Controller
                 return StatusCode(500, e);
             }
         }
+
     }
 }

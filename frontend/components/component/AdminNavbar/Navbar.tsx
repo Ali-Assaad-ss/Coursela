@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import React from "react";
 import { IoIosClose } from "react-icons/io";
@@ -57,7 +58,7 @@ function ProfileDropDown({className}) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={()=>localStorage.setItem("token","")}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
