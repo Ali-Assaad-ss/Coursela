@@ -13,6 +13,7 @@ namespace backend.Interface
         Task<Product?> GetProduct(int id);
         Task<List<Product>> GetProducts(string AdminId);
         Task<Product?> UpdateProduct(int id, UpdateProductDto updateCourseDto);
+        // Task<Product?> AddProduct(NewProductDto newProductDto);
         
 
     }

@@ -6,6 +6,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 import { useRouter } from "next/navigation";
+import jwt from 'jsonwebtoken';
 
 export default function Component() {
   const router= useRouter();
@@ -34,9 +35,13 @@ export default function Component() {
     if (response.ok) {
       const data = await response.json();
       const token = data.token; // Assuming the token is returned in the response data
-      router.push("/admin");
-      //save the token in the cookie
       document.cookie = `JWT=${token};path=/;max-age=604800`;
+      //check if token is role is admin or user
+      const decoded = jwt.decode(token);
+      if (decoded.role==="Admin")
+      router.push("/admin");
+      else if (decoded.role==="User")
+      router.push("/user");
     } else if (response.status ===401) {
       setError("Invalid email or password.");
     }

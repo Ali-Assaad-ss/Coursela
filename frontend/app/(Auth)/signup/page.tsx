@@ -36,6 +36,7 @@ export default function Component() {
       setError("Email is invalid.");
     if (error) return;
 
+
     try {
       const response = await fetch("/api/admin/register", {
         method: "POST",

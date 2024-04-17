@@ -73,5 +73,9 @@ namespace backend.Repository
             }
             return Product;
         }
+        // public async Task<Product?> AddProduct(NewProductDto newProductDto){
+        //     if (newProductDto.Type=="course"){}
+
+        // }
     }
 }

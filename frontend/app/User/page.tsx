@@ -4,5 +4,5 @@ import { useRouter } from "next/navigation";
 
 export default function page() {
 const router= useRouter();
-router.push("/User/Material");
+router.push("/user/dashboard");
 }
