@@ -7,6 +7,7 @@ using backend.Dto.Course;
 using backend.Dto.Product;
 using backend.Interface;
 using backend.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace backend.Repository

@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using backend.Data;
 using backend.Dto.Course;
+using backend.Extensions;
 using backend.Interface;
 using backend.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controller
 {
@@ -15,34 +20,32 @@ namespace backend.Controller
     public class CourseController : ControllerBase
     {
         private readonly ICourseRepository _courseRepositry;
-        public CourseController(ICourseRepository _courseRepositry)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IOfferRepository _offerRepository;
+        public CourseController(UserManager<ApplicationUser> userManager ,ICourseRepository courseRepositry, IOfferRepository offerRepository)
         {
-            this._courseRepositry = _courseRepositry;
+            _courseRepositry = courseRepositry;
+            _userManager = userManager;
+            _offerRepository = offerRepository;
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCourse(int id)
-        {
-            var Course = await _courseRepositry.GetCourse(id);
-            if (Course == null)
-            {
-                return NotFound();
-            }
-            return Ok(Course);
-        }
+
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddCourse([FromBody] CreateCourseDto course)
         {
-            var newCourse= new Course{
+            var username = User.GetUsername();
+            var admin= (Admin)await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            Course newCourse= new()
+            {
                 Name = course.Name,
-                Description = course.Description,
-                Price = course.Price,
-                Image = course.Image,
-                Limit = course.Limit,
-                Visibility = course.Visibility
             };
-
             var CreatedCourse = await _courseRepositry.AddCourse(newCourse);
-            return CreatedAtAction(nameof(GetCourse), new { id = newCourse.Id }, newCourse);
+            var offer = new Offer{
+                AdminId=admin.Id,
+                ProductId=newCourse.Id,
+            };
+            offer = await _offerRepository.AddOffer(offer);
+            return Ok(CreatedCourse);
         }
         
     }

@@ -6,6 +6,9 @@ using backend.Data;
 using backend.Dto.Product;
 using backend.Interface;
 using backend.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace backend.Repository
@@ -13,6 +16,8 @@ namespace backend.Repository
     public class ProductRepositry:IProductRepository
     {
         private readonly ApplicationDBContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
         public ProductRepositry(ApplicationDBContext context)
         {
             _context = context;
@@ -31,24 +36,43 @@ namespace backend.Repository
 
         }
 
-        public async Task<Product?> GetProduct(int id)
+        public async Task<AdminViewProductDto?> GetProduct(int id,ApplicationUser User)
         {
             var Product = await _context.Products.FindAsync(id);
-            return Product;
+            if (Product != null)
+            {
+                var adminViewProductDto = new AdminViewProductDto()
+                {
+                    Id = Product.Id,
+                    Name = Product.Name,
+                    Description = Product.Description,
+                    Image = Product.Image
+                };
+                return adminViewProductDto;
+            }
+            return null;
         }
-        public async Task<List<Product>> GetProducts(string AdminId)
+
+        public async Task<List<AdminViewProductDto>> GetProducts(ApplicationUser user)
         {
-            var Offerings =_context.Offers.Where(x => x.AdminId == AdminId).ToList();
-            List<Product> Products = new List<Product>();
+            var Offerings =_context.Offers.Where(x => x.AdminId == user.Id).ToList();
+            var products = new List<AdminViewProductDto>();
             foreach (var offering in Offerings)
             {
-                var Product = await _context.Products.FindAsync(offering.ProductId);
-                if (Product != null)
+                var product = await _context.Products.FindAsync(offering.ProductId);
+                if (product != null)
                 {
-                    Products.Add(Product);
+                    var adminViewProductDto = new AdminViewProductDto()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Description = product.Description,
+                        Image = product.Image
+                    };
+                    products.Add(adminViewProductDto);
                 }
             }
-            return Products;
+            return products;
         }
 
         public async Task<Product?> UpdateProduct(int id, UpdateProductDto updateCourseDto)

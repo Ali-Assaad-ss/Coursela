@@ -6,6 +6,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { BsPerson } from "react-icons/bs";
 import { useState } from "react";
 import Logo from "@/components/svg/Logo";
+import Link from "next/link";
 
 export default function Component() {
   const [Email, setEmail] = useState("");
@@ -144,6 +145,7 @@ export default function Component() {
             <Button className="w-1/4 md:w-1/2" onClick={register}>
               Sign up
             </Button>
+            <Link href={"/login"} className="underline text-xs text-blue-900 hover:text-blue-500">already have an account,Login</Link>
           </div>
           {error && (
             <div className="absolute bottom-0 bg-red-500 text-white p-2 w-full text-center">

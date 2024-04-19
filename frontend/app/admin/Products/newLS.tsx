@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +21,31 @@ import { CiSquarePlus } from "react-icons/ci";
 import { Button } from "@/components/ui/button";
 
 export default function New() {
+  const createProduct = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const type = formData.get("type");
+    const name = formData.get("name");
+    let url = "";
+    switch (type) {
+      case "Course":
+        url="/api/course"
+        break;
+      case "DigitalDownload":
+        url="/api/digital-download"
+        break;
+      case "Coaching":
+        url="/api/coaching"
+        break;
+    }
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+  }
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -28,34 +54,36 @@ export default function New() {
           </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
+        <form onSubmit={createProduct}>
         <AlertDialogHeader>
           <AlertDialogTitle>Create a Product</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>Enter Product Name</AlertDialogDescription>
-        <Input placeholder="Name"></Input>
+        <Input name="name" placeholder="Name"></Input>
         <AlertDialogDescription>Choose Product Type</AlertDialogDescription>
-        <RadioGroup defaultValue="option-one" className="w-96 h-40">
+        <RadioGroup name="type" defaultValue="Course" className="w-96 h-40" >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem className="w-5 h-5" value="option-one" id="option-one" />
+            <RadioGroupItem className="w-5 h-5" value="Course" id="Course" />
             <RiBook3Line className="text-blue-700 text-3xl" />
-            <Label htmlFor="option-one">Course</Label>
+            <Label htmlFor="Course">Course</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem className="w-5 h-5" value="option-two" id="option-two" />
+            <RadioGroupItem className="w-5 h-5" value="DigitalDownload" id="DigitalDownload"/>
             <CiFileOn className="text-yellow-700 text-3xl"/>
-            <Label htmlFor="option-two">Digital Download</Label>
+            <Label htmlFor="DigitalDownload">Digital Download</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem className="w-5 h-5" value="option-three" id="option-three" />
+            <RadioGroupItem className="w-5 h-5" value="Coaching" id="Coaching"/>
             <TbLivePhoto className="text-red-700 text-3xl"/>
-            <Label htmlFor="option-three">Coaching / Live Session</Label>
+            <Label htmlFor="Coaching">Coaching / Live Session</Label>
           </div>
         </RadioGroup>
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction type="submit">Continue</AlertDialogAction>
         </AlertDialogFooter>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   );

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using backend.Dto.User;
+using backend.Extensions;
 using backend.Interface;
 using backend.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -33,9 +35,9 @@ namespace backend.Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Email.ToLower());
-            if (user==null ) user =await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
+            if (user == null) user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
             if (user == null) return Unauthorized("Invalid username");
-            if(user.GetType().Name != "Admin") return Unauthorized("Not an admin!");
+            if (user.GetType().Name != "Admin") return Unauthorized("Not an admin!");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
@@ -47,7 +49,7 @@ namespace backend.Controller
                 {
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateTokenAsync(user,userRoles)
+                    Token = _tokenService.CreateTokenAsync(user, userRoles)
                 }
             );
         }
@@ -57,7 +59,7 @@ namespace backend.Controller
         {
             return Ok("Validated");
         }
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateUserDto registerDto)
         {
@@ -87,7 +89,7 @@ namespace backend.Controller
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
-                                Token = _tokenService.CreateTokenAsync(user,userRoles)
+                                Token = _tokenService.CreateTokenAsync(user, userRoles)
                             }
                         );
                     }

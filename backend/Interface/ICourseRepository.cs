@@ -13,8 +13,6 @@ namespace backend.Interface
         //create
         Task<Course> AddCourse(Course Course);
         //read
-        Task<Course?> GetCourse(int id);
-        //UpdateCourse
         Task<Course?> UpdateCourse(int id, UpdateProductDto updateCourseDto);
 
     }
