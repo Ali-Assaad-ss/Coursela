@@ -23,27 +23,6 @@ namespace backend.Controller
             _productRepositry = productRepositry;
             _userManager = userManager;
         }
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetProducts()
-        {
-            var username = User.GetUsername();
-            var admin =_userManager.Users.FirstOrDefault(x => x.UserName == username);
-            var Products = await _productRepositry.GetProducts(admin);
-            return Ok(Products);
-        }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var Product= await _productRepositry.DeleteProduct(id);
-            if (Product == null)
-            {
-                return NotFound();
-            }
-            return NoContent();
 
-        }
-
-        
     }
 }

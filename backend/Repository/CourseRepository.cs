@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.Data;
-using backend.Dto.Course;
 using backend.Dto.Product;
 using backend.Interface;
 using backend.Model;
@@ -15,12 +14,12 @@ namespace backend.Repository
     public class CourseRepository : ICourseRepository
     {
         private readonly ApplicationDBContext _context;
-        public CourseRepository(ApplicationDBContext context)
+        public CourseRepository(ApplicationDBContext context,IProductRepository productRepository)
         {
             _context = context;
             
         }
-        public async Task<Course> AddCourse(Course course)
+        public async Task<Course> AddCourse(Course course,string adminId)
         {
 
             await _context.Courses.AddAsync(course);
@@ -28,19 +27,17 @@ namespace backend.Repository
             return course;
         }
 
-        public async Task<Course?> GetCourse(int id)
+        public async Task<Course?> GetCourse(int id,string adminId)
         {
-            var Course = await _context.Courses.FindAsync(id);
-            return Course;
+            var course = await _context.Courses.Where(x=>x.Id==id && x.Offerings.Any(x=>x.AdminId==adminId)).Include(x=>x.Sections).FirstOrDefaultAsync();
+            if (course == null)
+            {
+                course = await _context.Courses.Where(x=>x.Id==id && x.Purchases.Any(x=>x.UserId==adminId)).Include(x=>x.Sections).FirstOrDefaultAsync();
+                if (course == null) return null;
+            
+            }
+            return course;
         }
 
-        public async Task<Course?> UpdateCourse(int id, UpdateProductDto updateCourseDto)
-        {
-            var Course = await _context.Courses.FindAsync(id);
-            if (Course != null)
-            {
-            }
-            return Course;
-        }
     }
 }

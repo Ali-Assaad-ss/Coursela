@@ -7,7 +7,6 @@ namespace backend.Model
 {
     public class Offer
     {
-        public int Id { get; set; }
         public string AdminId { get; set; }
         public Admin Admin { get; set; }
         public int ProductId { get; set; }

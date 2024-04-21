@@ -99,20 +99,20 @@ namespace backend.Data
             .HasOne(o => o.Product)
             .WithMany(p => p.Offerings)
             .HasForeignKey(o => o.ProductId);
-            
+
 
             builder.Entity<Offer>()
             .HasOne(o => o.Admin)
             .WithMany(a => a.Offerings)
             .HasForeignKey(o => o.AdminId);
-            
+
 
             //Community product relationship one to one
             builder.Entity<Community>()
             .HasOne(c => c.Product)
             .WithOne(p => p.Community)
             .HasForeignKey<Community>(c => c.ProductId);
-            
+
 
             //community Post relationship one to many
             builder.Entity<Post>()
@@ -173,6 +173,9 @@ namespace backend.Data
             //user purchase product relationship many to many
             //1. user purchase relationship one to many
             builder.Entity<Purchase>()
+            .HasKey(o => new { o.ProductId, o.UserId });
+
+            builder.Entity<Purchase>()
             .HasOne(p => p.User)
             .WithMany(u => u.Purchases)
             .HasForeignKey(p => p.UserId)
@@ -204,13 +207,13 @@ namespace backend.Data
             .HasOne(b => b.User)
             .WithMany(u => u.Bookings)
             .HasForeignKey(b => b.UserId);
-            
+
             //2. coaching booking relationship one to many
             builder.Entity<Booking>()
             .HasOne(b => b.Coaching)
             .WithMany(c => c.Bookings)
             .HasForeignKey(b => b.CoachingId);
-            
+
 
             //Course section relationship one to many
             builder.Entity<Section>()

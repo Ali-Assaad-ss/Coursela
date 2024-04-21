@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using backend.Data;
-using backend.Dto.Course;
+using backend.Dto.Product;
 using backend.Extensions;
 using backend.Interface;
 using backend.Model;
@@ -30,23 +30,45 @@ namespace backend.Controller
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> AddCourse([FromBody] CreateCourseDto course)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddCourse([FromBody] NewProductDto course)
         {
-            var username = User.GetUsername();
-            var admin= (Admin)await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            var adminId = User.GetUserId();
             Course newCourse= new()
             {
                 Name = course.Name,
             };
-            var CreatedCourse = await _courseRepositry.AddCourse(newCourse);
+            var CreatedCourse = await _courseRepositry.AddCourse(newCourse,adminId);
             var offer = new Offer{
-                AdminId=admin.Id,
+                AdminId=adminId,
                 ProductId=newCourse.Id,
             };
             offer = await _offerRepository.AddOffer(offer);
-            return Ok(CreatedCourse);
+            return Ok((Product)CreatedCourse);
         }
-        
+        [Authorize]
+        [HttpGet("admin/{id}")]
+        public async Task<IActionResult> GetCourse(int id)
+        {
+            var adminId = User.GetUserId();
+            var course = await _courseRepositry.GetCourse(id,adminId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return Ok(course);
+        }
+        [Authorize]
+        [HttpGet("{id}/sections")]
+        public async Task<IActionResult> GetSections(int id)
+        {
+            var adminId = User.GetUserId();
+            var course = await _courseRepositry.GetCourse(id,adminId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return Ok(course.Sections);
+        }
     }
 }
