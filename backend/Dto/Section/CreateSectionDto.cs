@@ -8,8 +8,6 @@ namespace backend.Dto.Section
     public class CreateSectionDto
     {
         public string Title { get; set; }
-        public int? ParentSectionId { get; set; }
-        public int Order { get; set; }
-        public string? Visibility { get; set; }
+        public int ParentSectionId { get; set;}
     }
 }

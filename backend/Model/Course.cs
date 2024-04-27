@@ -7,6 +7,7 @@ namespace backend.Model
 {
     public class Course : Product
     {
-        public List<Section>? Sections { get; set; }
+        public int SectionId { get; set; }
+        public Section? Section{ get; set; }
     }
 }

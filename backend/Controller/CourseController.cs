@@ -68,7 +68,7 @@ namespace backend.Controller
             {
                 return NotFound();
             }
-            return Ok(course.Sections);
+            return Ok(course.Section);
         }
     }
 }

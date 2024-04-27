@@ -32,27 +32,25 @@ import { MdOutlineDeleteForever } from "react-icons/md";
 import { TiEdit } from "react-icons/ti";
 import { getCookie } from "cookies-next";
 
-export default function Page({params}) {
+export default function Page({ params }) {
   const [lessons, setLessons] = useState([]);
-
+  const [sectionId, setSectionId] = useState(0);
   async function lessonList() {
-    const response = await fetch(`/api/admin/course/${params.id}/sections`, {
+    const response = await fetch(`/api/admin/courses/${params.id}`, {
       method: "Get",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie('JWT'),
+        Authorization: "Bearer " + getCookie("JWT"),
       },
     });
     const data = await response.json();
-    console.log(data);
-    setLessons(data);
+    setSectionId(data.section.id);
+    setLessons(data.section.lessons);
   }
 
   useEffect(() => {
     lessonList();
   }, []);
-
-
 
   // const [lessons, setLessons] = useState([
   //   {
@@ -105,12 +103,15 @@ export default function Page({params}) {
           <IoSettingsOutline />
         </Button>
       </div>
-      <Section Sectionlessons={lessons} onReorderFunction={setLessons} />
+      <Section sectionId={sectionId}
+        Sectionlessons={lessons}
+        onReorderFunction={setLessons}
+      />
     </div>
   );
 }
 
-export function Section({ Sectionlessons, onReorderFunction }) {
+export function Section({ Sectionlessons, onReorderFunction,sectionId}:any) {
   return (
     <Reorder.Group
       className="border mx-4 rounded-xl flex flex-col w-full  p-5  text-gray-800  gap-7"
@@ -123,13 +124,13 @@ export function Section({ Sectionlessons, onReorderFunction }) {
       ))}
       <div className="flex justify-left gap-4">
         <LessonDialog />
-        <SectionDialog />
+        <SectionDialog ParentSectionId={sectionId}/>
       </div>
     </Reorder.Group>
   );
 }
 
-function LessonItem({ lesson }: any) {
+function LessonItem({ lesson ,courseId }: any) {
   const controls = useDragControls();
   return (
     <Reorder.Item
@@ -145,14 +146,15 @@ function LessonItem({ lesson }: any) {
       >
         <TbGridDots className="text-3xl" />
       </div>
-      <Lesson type={lesson.type} title={lesson.title} />
+      <Lesson lesson={lesson} courseId={courseId}/>
     </Reorder.Item>
   );
 }
 
-export function Lesson(props) {
+export function Lesson({lesson, courseId}: any) {
+
   let Icon;
-  switch (props.type) {
+  switch (lesson.type) {
     case "Section":
       Icon = BsFolderSymlink;
       break;
@@ -178,17 +180,39 @@ export function Lesson(props) {
       Icon = BsFolderSymlink; // Default to section icon if type is not specified
   }
 
+async function deleteLesson(){
+  // if (lesson.type=="Section"){
+    if (true){
+    let url = `/api/admin/course/${courseId}/sections/${lesson.id}`;
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie("JWT"),
+      },
+      method: "DELETE",
+    }).then((res) => {
+      if (res.ok) {
+        //print the response data
+        res.json().then((data) => {
+          console.log(data);
+        });
+        // res.json().then((data) =>{router.push(`/admin/${data.type}/${data.id}`)});
+      } else {
+        alert("Error");
+      }
+    });
+}}
+
   return (
     <div className="flex items-center w-full">
       <Icon className="bg-slate-100 text-black text-5xl p-2 rounded-md" />
-      <h2 className="text-2xl font-bold ml-5">{props.title}</h2>
+      <h2 className="text-2xl font-bold ml-5">{lesson.title}</h2>
       <div className="ml-auto text-3xl flex gap-2 items-center">
-      <TiEdit className="hover:text-blue-900 hover:cursor-pointer" />
-      <MdOutlineDeleteForever className="hover:text-red-950 hover:cursor-pointer" />
+        <TiEdit className="hover:text-blue-900 hover:cursor-pointer" />
+        <MdOutlineDeleteForever className="hover:text-red-950 hover:cursor-pointer" onClick={deleteLesson} />
+      </div>
     </div>
-    </div>
-  );
-}
+  );}
 
 export function LessonDialog() {
   return (
@@ -228,7 +252,32 @@ export function LessonDialog() {
     </Dialog>
   );
 }
-export function SectionDialog() {
+export function SectionDialog({ParentSectionId}:{ParentSectionId:number}) {
+  const createSection = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const title = formData.get("title");
+    let url = `/api/admin/course/sections`;
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie("JWT"),
+      },
+      method: "POST",
+      body: JSON.stringify({ title,ParentSectionId}),
+    }).then((res) => {
+      if (res.ok) {
+        //print the response data
+        res.json().then((data) => {
+          console.log(data);
+        });
+        // res.json().then((data) =>{router.push(`/admin/${data.type}/${data.id}`)});
+      } else {
+        alert("Error");
+      }
+    });
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -239,13 +288,13 @@ export function SectionDialog() {
           <DialogTitle>Create Section</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <div>
-          <p className="mb-4">Enter Section Name</p>
-          <Input placeholder="Name..." id="name" />
-        </div>
-        <DialogClose className="ml-auto">
-          <Button>Add</Button>
-        </DialogClose>
+        <form onSubmit={createSection}>
+            <p className="mb-4">Enter Section Name</p>
+            <Input placeholder="Name..." id="name" name="title" />
+          <DialogClose className="ml-auto mt-5 flex">
+            <Button type="submit">Add</Button>
+          </DialogClose>
+        </form>
       </DialogContent>
     </Dialog>
   );

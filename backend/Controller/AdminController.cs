@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using backend.Dto.Lesson;
 using backend.Dto.Product;
 using backend.Dto.Section;
 using backend.Dto.User;
@@ -19,6 +20,7 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -28,7 +30,8 @@ namespace backend.Controller
         private readonly IProductRepository _productRepositry;
         private readonly SectionRepository _sectionRepository;
         private readonly IOfferRepository _offerRepository;
-        public AdminController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager, ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository, IOfferRepository offerRepository)
+        private readonly LessonRepository _lessonRepository;
+        public AdminController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager, ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository, IOfferRepository offerRepository, LessonRepository lessonRepository)
         {
             _signinManager = signInManager;
             _tokenService = tokenService;
@@ -37,10 +40,11 @@ namespace backend.Controller
             _productRepositry = productRepository;
             _sectionRepository = sectionRepository;
             _offerRepository = offerRepository;
+            _lessonRepository = lessonRepository;
         }
 
-
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -60,18 +64,20 @@ namespace backend.Controller
                 {
                     UserName = user.UserName,
                     Email = user.Email,
+                    UserRoles = userRoles,
                     Token = _tokenService.CreateTokenAsync(user, userRoles)
                 }
             );
         }
-        [Authorize(Roles = "Admin")]
         [HttpGet("validate")]
-        public IActionResult Validate()
+        [Authorize]
+        public async Task<IActionResult> Validate()
         {
-            return Ok("Validated");
+            return Ok("Valid");
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] CreateUserDto registerDto)
         {
             try
@@ -100,7 +106,8 @@ namespace backend.Controller
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
-                                Token = _tokenService.CreateTokenAsync(user, userRoles)
+                                UserRoles = userRoles,
+                                Token = _tokenService.CreateTokenAsync(user, userRoles),
                             }
                         );
                     }
@@ -121,6 +128,7 @@ namespace backend.Controller
         }
 
         //getting all the products of the user
+
         [HttpGet("products")]
         [Authorize]
         public async Task<IActionResult> GetProducts()
@@ -132,21 +140,19 @@ namespace backend.Controller
 
         //getting a Course by id
         [HttpGet("courses/{id}")]
-        [Authorize]
         public async Task<IActionResult> GetCourses(int id)
         {
-            var adminId =User.GetUserId() ;
-            
+            var adminId = User.GetUserId();
+
             var courses = await _courseRepository.GetCourse(id, adminId);
             return Ok(courses);
         }
         //deleting a Product by id
         [HttpDelete("products/{id}")]
-        [Authorize]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var adminId =User.GetUserId() ;
-            
+            var adminId = User.GetUserId();
+
             var courses = await _productRepositry.DeleteProduct(id, adminId);
             if (courses == null) return NotFound("Course not found");
             return Ok("course deleted successfully");
@@ -154,81 +160,71 @@ namespace backend.Controller
 
         //creating a new product
         [HttpPost("product")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct([FromBody] NewProductDto productDto)
         {
             //get the admin id
             var adminId = User.GetUserId();
             //create the product
             //case of course
-            if(productDto.Type == "Course")
+            if (productDto.Type == "Course")
             {
                 Course newCourse = new()
                 {
                     Name = productDto.Name,
                 };
-                var CreatedCourse = await _courseRepository.AddCourse(newCourse,adminId);
+                var CreatedCourse = await _courseRepository.AddCourse(newCourse, adminId);
                 //create the offer many to many realtion
                 var offer = new Offer
                 {
                     AdminId = adminId,
                     ProductId = newCourse.Id,
                 };
-                offer = await _offerRepository.AddOffer(offer);
+                await _offerRepository.AddOffer(offer);
                 return Ok(CreatedCourse);
             }
             return BadRequest("Invalid product type");
         }
 
         //getting all the sections of a course
-        [HttpGet("course/{id}/sections")]
-        [Authorize]
+        [HttpGet("course/sections/{id}")]
         public async Task<IActionResult> GetCourseSections(int id)
         {
-            var adminId =User.GetUserId() ;
-            
-            var course = await _courseRepository.GetCourse(id, adminId);
-            if (course == null) return NotFound("Course not found");
-            return Ok(course.Sections);
+            var adminId = User.GetUserId();
+
+            var section = await _sectionRepository.GetSection(id, adminId);
+            if (section == null) return NotFound("section not found");
+            return Ok(section);
         }
 
         //creating a new section
-        [HttpPost("course/{courseId}/sections")]
-        [Authorize]
-        public async Task<IActionResult> CreateSection(int courseId, [FromBody] CreateSectionDto section)
+        [HttpPost("course/sections")]
+        public async Task<IActionResult> CreateSection([FromBody] CreateSectionDto section)
         {
-            var adminId =User.GetUserId() ;
-            
-            var course = await _courseRepository.GetCourse(courseId, adminId);
-            if (course == null) return NotFound("Course not found");
-            int order = course.Sections?.Count ?? 0;
-            var newSection = new Section
-            {
-                Title = section.Title,
-                CourseId = courseId,
-                ParentSectionId = section.ParentSectionId,
-                Order = order,
-                Visibility = section.Visibility ?? "visible"
-            };
-            await _sectionRepository.AddSection(newSection);
-
+            var adminId = User.GetUserId();
+            var newSection = await _lessonRepository.AddSection(adminId, section);
+            if (newSection == null) return Unauthorized("You don't have access to this course");
             return Ok(newSection);
         }
 
         //deleting a section
-        [HttpDelete("course/{courseId}/sections/{sectionId}")]
-        [Authorize]
-        public async Task<IActionResult> DeleteSection(int courseId, int sectionId)
+        [HttpDelete("course/sections/{sectionId}")]
+        public async Task<IActionResult> DeleteSection(int sectionId)
         {
-            var adminId =User.GetUserId() ;
-            
-            var course = await _courseRepository.GetCourse(courseId, adminId);
-            if (course == null) return NotFound("Course not found");
-            if (await _sectionRepository.DeleteSection(sectionId))
+            var adminId = User.GetUserId();
+
+            if (await _sectionRepository.DeleteSection(sectionId, adminId))
             {
                 return Ok("Section deleted successfully");
             }
             return NotFound("section not found");
         }
+        [HttpPost("Lesson")]
+        public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto){
+            var adminId = User.GetUserId();
+            var newLesson = await _lessonRepository.AddLesson(adminId, LessonDto);
+            if (newLesson == null) return Unauthorized("You don't have access to this course");
+            return Ok(newLesson);  
+        }
+        
     }
 }

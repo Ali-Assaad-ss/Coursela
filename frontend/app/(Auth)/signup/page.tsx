@@ -7,8 +7,11 @@ import { BsPerson } from "react-icons/bs";
 import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import jwt from 'jsonwebtoken';
 
 export default function Component() {
+  const router = useRouter();
   const [Email, setEmail] = useState("");
   const [Password, setpassword] = useState("");
   const [FirstName, setFirstName] = useState("");
@@ -56,9 +59,13 @@ export default function Component() {
       if (response.ok) {
         const data = await response.json();
         const token = data.token; // Assuming the token is returned in the response data
-
-        // Save the token in local storage
-        localStorage.setItem("token", token);
+        //save in cookie
+        document.cookie = `JWT=${token};path=/;max-age=604800`;
+        const decoded = jwt.decode(token);
+        if (decoded.role==="Admin")
+        router.push("/admin");
+        else if (decoded.role==="User")
+        router.push("/user");
 
       } else if (response.status === 500) {
         const data = await response.json();

@@ -19,32 +19,39 @@ import { TbLivePhoto } from "react-icons/tb";
 import { RiBook3Line } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { Button } from "@/components/ui/button";
+import { getCookie  } from 'cookies-next';
+import { useRouter } from "next/navigation";
 
-export default function New() {
+export default function New({products,setProducts}:any) {
+  const router=useRouter();
+
   const createProduct = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const type = formData.get("type");
     const name = formData.get("name");
-    let url = "";
-    switch (type) {
-      case "Course":
-        url="/api/course"
-        break;
-      case "DigitalDownload":
-        url="/api/digital-download"
-        break;
-      case "Coaching":
-        url="/api/coaching"
-        break;
-    }
+    let url = "/api/admin/product";
     fetch(url, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + getCookie('JWT'),
       },
       method: "POST",
-      body: JSON.stringify({ name }),
-    });
+      body: JSON.stringify({ name, type }),
+    }).then((res) => {
+      if (res.ok) {
+        //print the response data
+        res.json().then((data) => {
+          console.log(data)
+          setProducts([...products,data])
+        });
+        // res.json().then((data) =>{router.push(`/admin/${data.type}/${data.id}`)});
+      } else {
+        alert("Error");
+      }
+    })
+    ;
+
   }
   return (
     <AlertDialog>

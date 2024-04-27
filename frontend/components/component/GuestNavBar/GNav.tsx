@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { IoIosClose } from "react-icons/io";
-import "../navbar/Navbar.css";
+import "../navbar/navbar.css"
 import { RxHamburgerMenu } from "react-icons/rx";
 import Logo from "@/components/svg/Logo";
 import { Button } from "@/components/ui/button";

@@ -7,6 +7,7 @@ import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 import { useRouter } from "next/navigation";
 import jwt from 'jsonwebtoken';
+import Link from "next/link";
 
 export default function Component() {
   const router= useRouter();
@@ -83,6 +84,7 @@ export default function Component() {
             <Button className="w-1/4 md:w-1/2" onClick={login}>
               Login
             </Button>
+            <Link href={"/signup"} className="underline text-xs text-blue-900 hover:text-blue-500">No Account, Create one</Link>
           </div>
           {error && (
             <div className="absolute bottom-0 bg-red-500 text-white p-2 w-full text-center">

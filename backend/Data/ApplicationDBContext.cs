@@ -214,29 +214,11 @@ namespace backend.Data
             .WithMany(c => c.Bookings)
             .HasForeignKey(b => b.CoachingId);
 
-
-            //Course section relationship one to many
-            builder.Entity<Section>()
-            .HasOne(s => s.Course)
-            .WithMany(c => c.Sections)
-            .HasForeignKey(s => s.CourseId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
-            //parentsection include childsection relationship
-            builder.Entity<Section>()
-            .HasMany(s => s.ChildSections)
-            .WithOne(s => s.ParentSection)
-            .HasForeignKey(s => s.ParentSectionId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
-
             //lesson section relationship
             builder.Entity<Lesson>().
-            HasOne(l => l.Section).
+            HasOne(l => l.ParentSection).
             WithMany(s => s.Lessons).
-            HasForeignKey(l => l.SectionId);
+            HasForeignKey(l => l.ParentSectionId);
 
             //lesson quiz relationship using discriminator
             builder.Entity<Lesson>()

@@ -27,7 +27,7 @@ namespace backend.Service
             {
                 new(JwtRegisteredClaimNames.Email, user.Email),
                 new(JwtRegisteredClaimNames.GivenName, user.UserName),
-                new(JwtRegisteredClaimNames.NameId, user.Id)
+                new(JwtRegisteredClaimNames.NameId, user.Id),
             };
             foreach (var role in userRoles)
             {

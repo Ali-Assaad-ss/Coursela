@@ -91,6 +91,7 @@ builder.Services.AddScoped<ICourseRepository,CourseRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepositry>();
 builder.Services.AddScoped<IOfferRepository, OfferRepository>();
 builder.Services.AddScoped<SectionRepository>();
+builder.Services.AddScoped<LessonRepository>();
 
 var app = builder.Build();
 

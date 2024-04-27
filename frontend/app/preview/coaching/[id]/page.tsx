@@ -9,7 +9,7 @@ export default function page() {
   let lesson = {
     id: 1,
     admin:"John Doe",
-    rating:4.5,
+    rating:3.8,
     ratingCount: 165,
     memberCount: 1465,
     price:29.99,

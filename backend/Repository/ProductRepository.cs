@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Repository
 {
@@ -47,12 +48,17 @@ namespace backend.Repository
         public async Task<Product?> DeleteProduct(int id, string adminId)
 
         {
-            var product = GetProduct(id,adminId).Result;
+            var product = await GetProduct(id,adminId);
             if (product != null)
             {
                 if (product.GetType().Name == "Course")
                 {
-                    _context.Sections.RemoveRange(_context.Sections.Where(x => x.CourseId == product.Id));
+                    var course= await _context.Courses.Include(x=>x.Section).ThenInclude(s=>s.Lessons).Where(x=>x.Id==product.Id).FirstOrDefaultAsync();
+                    if (!course.Section.Lessons.IsNullOrEmpty())
+                    {
+                        _context.Lessons.RemoveRange(course.Section.Lessons);
+                    }
+                    _context.Sections.Remove(course.Section);
                 }
                 _context.Offers.RemoveRange(_context.Offers.Where(x => x.ProductId == id));
                 _context.Purchases.RemoveRange(_context.Purchases.Where(x => x.ProductId == id));
