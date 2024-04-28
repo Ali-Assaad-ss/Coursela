@@ -31,7 +31,7 @@ namespace backend.Controller
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddCourse([FromBody] NewProductDto course)
+        public async Task<IActionResult> AddCourse([FromBody] CreateNewProductDto course)
         {
             var adminId = User.GetUserId();
             Course newCourse= new()

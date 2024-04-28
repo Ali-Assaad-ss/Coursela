@@ -3,7 +3,9 @@ using backend.Interface;
 using backend.Model;
 using backend.Repository;
 using backend.Service;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -86,12 +88,30 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 10L * 1024 * 1024 * 1024; // Set the limit to 10 GB
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10L * 1024 * 1024 * 1024; // Set to 10 GB
+    // Optionally, you can also adjust other limits as needed
+    options.MultipartHeadersLengthLimit = Int32.MaxValue;
+    options.MultipartBoundaryLengthLimit = Int32.MaxValue;
+    options.ValueLengthLimit = Int32.MaxValue;
+    options.BufferBodyLengthLimit = Int64.MaxValue;
+    options.MemoryBufferThreshold = Int32.MaxValue;
+});
+
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICourseRepository,CourseRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepositry>();
 builder.Services.AddScoped<IOfferRepository, OfferRepository>();
 builder.Services.AddScoped<SectionRepository>();
 builder.Services.AddScoped<LessonRepository>();
+builder.Services.AddScoped<DigitalProductRepository>();
+builder.Services.AddScoped<CoachingRepository>();
 
 var app = builder.Build();
 

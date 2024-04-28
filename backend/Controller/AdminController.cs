@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using backend.Dto.DigitalProduct;
 using backend.Dto.Lesson;
 using backend.Dto.Product;
 using backend.Dto.Section;
@@ -31,7 +32,11 @@ namespace backend.Controller
         private readonly SectionRepository _sectionRepository;
         private readonly IOfferRepository _offerRepository;
         private readonly LessonRepository _lessonRepository;
-        public AdminController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager, ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository, IOfferRepository offerRepository, LessonRepository lessonRepository)
+        private readonly DigitalProductRepository _digitalProductRepository;
+        private readonly CoachingRepository _coachingRepository;
+        public AdminController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager, 
+        ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository,
+        IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository, CoachingRepository coachingRepository)
         {
             _signinManager = signInManager;
             _tokenService = tokenService;
@@ -41,6 +46,8 @@ namespace backend.Controller
             _sectionRepository = sectionRepository;
             _offerRepository = offerRepository;
             _lessonRepository = lessonRepository;
+            _digitalProductRepository = digitalProductRepository;
+            _coachingRepository = coachingRepository;
         }
 
         [HttpPost("login")]
@@ -73,7 +80,7 @@ namespace backend.Controller
         [Authorize]
         public async Task<IActionResult> Validate()
         {
-            return Ok("Valid");
+            return Ok("valid");
         }
 
         [HttpPost("register")]
@@ -160,7 +167,7 @@ namespace backend.Controller
 
         //creating a new product
         [HttpPost("product")]
-        public async Task<IActionResult> AddProduct([FromBody] NewProductDto productDto)
+        public async Task<IActionResult> AddProduct([FromBody] CreateNewProductDto productDto)
         {
             //get the admin id
             var adminId = User.GetUserId();
@@ -179,8 +186,54 @@ namespace backend.Controller
                     AdminId = adminId,
                     ProductId = newCourse.Id,
                 };
+
                 await _offerRepository.AddOffer(offer);
-                return Ok(CreatedCourse);
+                var NewProductDto= new NewProductDto
+                {
+                    Id = newCourse.Id,
+                    Name = newCourse.Name,
+                    Type = "Course",
+                    members = 0
+                };
+                return Ok(NewProductDto);
+            }
+            else if(productDto.Type=="DigitalDownload")
+            {
+                var createdDigitalDownload = await _digitalProductRepository.AddDigitalProduct(productDto);
+                var NewProductDto= new NewProductDto
+                {
+                    Id = createdDigitalDownload.Id,
+                    Name = createdDigitalDownload.Name,
+                    Type = "DigitalDownload",
+                    members = 0
+                };
+                var offer = new Offer
+                {
+                    AdminId = adminId,
+                    ProductId = createdDigitalDownload.Id,
+                };
+                await _offerRepository.AddOffer(offer);
+
+                return Ok(NewProductDto);
+            }
+            else if(productDto.Type=="Coaching")
+            {
+                var createdCoaching = await _coachingRepository.AddCoaching(productDto);
+                var NewProductDto= new NewProductDto
+                {
+                    Id = createdCoaching.Id,
+                    Name = createdCoaching.Name,
+                    Type = "Coaching",
+                    members = 0
+                };
+                var offer = new Offer
+                {
+                    AdminId = adminId,
+                    ProductId = createdCoaching.Id,
+                };
+                await _offerRepository.AddOffer(offer);
+                return Ok(NewProductDto);
+
             }
             return BadRequest("Invalid product type");
         }
@@ -225,6 +278,21 @@ namespace backend.Controller
             if (newLesson == null) return Unauthorized("You don't have access to this course");
             return Ok(newLesson);  
         }
-        
+        [HttpGet("digitaldownload/{id}")]
+        public async Task<IActionResult> GetDigitalDownload(int id)
+        {
+            var adminId = User.GetUserId();
+
+            var digitalDownload = await _digitalProductRepository.GetDigitalProduct(id, adminId);
+            if (digitalDownload == null) return NotFound("DigitalDownload not found");
+            return Ok(digitalDownload);
+        }
+        [HttpPut("digitaldownload/{id}")]
+        public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateDigitalProductDto dto)
+        {
+            var adminId = User.GetUserId();
+            var digitalDownload= await _digitalProductRepository.UpdateDigitalProduct(id, dto ,adminId);
+            return Ok(digitalDownload);
+        }
     }
 }

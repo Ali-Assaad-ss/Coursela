@@ -95,6 +95,6 @@ export const columns = [
   {
     accessorKey: "actions",
     header: () => <div className="text-center">Action</div>,
-    cell: ({ row }: any) => <Edit />,
+    cell: ({ row }: any) => <Edit row={row}/>,
   },
 ];

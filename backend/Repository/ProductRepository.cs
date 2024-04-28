@@ -34,8 +34,9 @@ namespace backend.Repository
             {
                 Id = x.Product.Id,
                 Name = x.Product.Name,
-                Type = x.Product.GetType().Name,
-                Members = x.Product.Purchases?.Count ?? 0
+                Type = x.Product.GetType().Name == "DigitalProduct" ? "DigitalDownload" : x.Product.GetType().Name,
+                Members = x.Product.Purchases?.Count ?? 0,
+                Price=x.Product.Price,
             }).ToList();
         }
         public async Task<Product?> GetProduct(int id,string adminId)
