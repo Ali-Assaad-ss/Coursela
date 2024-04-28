@@ -9,7 +9,6 @@ namespace backend.Dto.User
     {
         public string UserName { get; set; }
         public string Email { get; set; }
-        public string Token { get; set; }
         public IList<string> UserRoles { get; set; }
     }
 }

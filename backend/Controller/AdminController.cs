@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using backend.Dto.DigitalProduct;
 using backend.Dto.Lesson;
 using backend.Dto.Product;
@@ -25,7 +21,6 @@ namespace backend.Controller
     public class AdminController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITokenService _tokenService;
         private readonly SignInManager<ApplicationUser> _signinManager;
         private readonly ICourseRepository _courseRepository;
         private readonly IProductRepository _productRepositry;
@@ -34,12 +29,11 @@ namespace backend.Controller
         private readonly LessonRepository _lessonRepository;
         private readonly DigitalProductRepository _digitalProductRepository;
         private readonly CoachingRepository _coachingRepository;
-        public AdminController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager, 
+        public AdminController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
         ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository,
         IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository, CoachingRepository coachingRepository)
         {
             _signinManager = signInManager;
-            _tokenService = tokenService;
             _userManager = userManager;
             _courseRepository = courseRepository;
             _productRepositry = productRepository;
@@ -61,9 +55,10 @@ namespace backend.Controller
             if (user == null) return Unauthorized("Invalid username");
             if (user.GetType().Name != "Admin") return Unauthorized("Not an admin!");
 
-            var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            var result = await _signinManager.PasswordSignInAsync(user, loginDto.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
+
             var userRoles = await _userManager.GetRolesAsync(user);
 
             return Ok(
@@ -72,15 +67,22 @@ namespace backend.Controller
                     UserName = user.UserName,
                     Email = user.Email,
                     UserRoles = userRoles,
-                    Token = _tokenService.CreateTokenAsync(user, userRoles)
                 }
             );
         }
-        [HttpGet("validate")]
+        [HttpGet("logout")]
         [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await _signinManager.SignOutAsync();
+            return Ok("Logged out successfully");
+        }
+        
+        [HttpGet("validate")]
         public async Task<IActionResult> Validate()
         {
-            return Ok("valid");
+            var role= User.FindAll(ClaimTypes.Role).Select(x=>x.Value);
+            return Ok(role);
         }
 
         [HttpPost("register")]
@@ -113,8 +115,7 @@ namespace backend.Controller
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
-                                UserRoles = userRoles,
-                                Token = _tokenService.CreateTokenAsync(user, userRoles),
+                                UserRoles = userRoles
                             }
                         );
                     }
@@ -137,10 +138,9 @@ namespace backend.Controller
         //getting all the products of the user
 
         [HttpGet("products")]
-        [Authorize]
         public async Task<IActionResult> GetProducts()
         {
-            var AdminId = User.GetUserId();
+            var AdminId = User.GetId();
             var products = await _productRepositry.GetProducts(AdminId);
             return Ok(products);
         }
@@ -149,7 +149,7 @@ namespace backend.Controller
         [HttpGet("courses/{id}")]
         public async Task<IActionResult> GetCourses(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
 
             var courses = await _courseRepository.GetCourse(id, adminId);
             return Ok(courses);
@@ -158,7 +158,7 @@ namespace backend.Controller
         [HttpDelete("products/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
 
             var courses = await _productRepositry.DeleteProduct(id, adminId);
             if (courses == null) return NotFound("Course not found");
@@ -170,7 +170,7 @@ namespace backend.Controller
         public async Task<IActionResult> AddProduct([FromBody] CreateNewProductDto productDto)
         {
             //get the admin id
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
             //create the product
             //case of course
             if (productDto.Type == "Course")
@@ -188,7 +188,7 @@ namespace backend.Controller
                 };
 
                 await _offerRepository.AddOffer(offer);
-                var NewProductDto= new NewProductDto
+                var NewProductDto = new NewProductDto
                 {
                     Id = newCourse.Id,
                     Name = newCourse.Name,
@@ -197,10 +197,10 @@ namespace backend.Controller
                 };
                 return Ok(NewProductDto);
             }
-            else if(productDto.Type=="DigitalDownload")
+            else if (productDto.Type == "DigitalDownload")
             {
                 var createdDigitalDownload = await _digitalProductRepository.AddDigitalProduct(productDto);
-                var NewProductDto= new NewProductDto
+                var NewProductDto = new NewProductDto
                 {
                     Id = createdDigitalDownload.Id,
                     Name = createdDigitalDownload.Name,
@@ -216,10 +216,10 @@ namespace backend.Controller
 
                 return Ok(NewProductDto);
             }
-            else if(productDto.Type=="Coaching")
+            else if (productDto.Type == "Coaching")
             {
                 var createdCoaching = await _coachingRepository.AddCoaching(productDto);
-                var NewProductDto= new NewProductDto
+                var NewProductDto = new NewProductDto
                 {
                     Id = createdCoaching.Id,
                     Name = createdCoaching.Name,
@@ -242,7 +242,7 @@ namespace backend.Controller
         [HttpGet("course/sections/{id}")]
         public async Task<IActionResult> GetCourseSections(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
 
             var section = await _sectionRepository.GetSection(id, adminId);
             if (section == null) return NotFound("section not found");
@@ -253,7 +253,7 @@ namespace backend.Controller
         [HttpPost("course/sections")]
         public async Task<IActionResult> CreateSection([FromBody] CreateSectionDto section)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
             var newSection = await _lessonRepository.AddSection(adminId, section);
             if (newSection == null) return Unauthorized("You don't have access to this course");
             return Ok(newSection);
@@ -263,7 +263,7 @@ namespace backend.Controller
         [HttpDelete("course/sections/{sectionId}")]
         public async Task<IActionResult> DeleteSection(int sectionId)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
 
             if (await _sectionRepository.DeleteSection(sectionId, adminId))
             {
@@ -272,16 +272,17 @@ namespace backend.Controller
             return NotFound("section not found");
         }
         [HttpPost("Lesson")]
-        public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto){
-            var adminId = User.GetUserId();
+        public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto)
+        {
+            var adminId = User.GetId();
             var newLesson = await _lessonRepository.AddLesson(adminId, LessonDto);
             if (newLesson == null) return Unauthorized("You don't have access to this course");
-            return Ok(newLesson);  
+            return Ok(newLesson);
         }
         [HttpGet("digitaldownload/{id}")]
         public async Task<IActionResult> GetDigitalDownload(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
 
             var digitalDownload = await _digitalProductRepository.GetDigitalProduct(id, adminId);
             if (digitalDownload == null) return NotFound("DigitalDownload not found");
@@ -290,8 +291,8 @@ namespace backend.Controller
         [HttpPut("digitaldownload/{id}")]
         public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateDigitalProductDto dto)
         {
-            var adminId = User.GetUserId();
-            var digitalDownload= await _digitalProductRepository.UpdateDigitalProduct(id, dto ,adminId);
+            var adminId = User.GetId();
+            var digitalDownload = await _digitalProductRepository.UpdateDigitalProduct(id, dto, adminId);
             return Ok(digitalDownload);
         }
     }

@@ -16,12 +16,11 @@ namespace backend.Controller
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITokenService _tokenService;
+
         private readonly SignInManager<ApplicationUser> _signinManager;
-        public UserController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signInManager)
+        public UserController(UserManager<ApplicationUser> userManager,  SignInManager<ApplicationUser> signInManager)
         {
             _signinManager = signInManager;
-            _tokenService = tokenService;
             _userManager = userManager;
         }
 
@@ -45,7 +44,6 @@ namespace backend.Controller
                 {
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateTokenAsync(user, userRoles)
                 }
             );
         }
@@ -82,7 +80,6 @@ namespace backend.Controller
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
-                                Token = _tokenService.CreateTokenAsync(user, userRoles)
                             }
                         );
                     }

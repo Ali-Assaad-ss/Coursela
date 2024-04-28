@@ -61,8 +61,8 @@ function ProfileDropDown({ className }) {
       <DropdownMenuContent>
         <DropdownMenuItem>Profile</DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {
-            document.cookie = `JWT=;path=/;max-age=0`;
+        onClick={()=>{
+            fetch("/api/admin/logout")
             router.push("/login");
           }}
         >

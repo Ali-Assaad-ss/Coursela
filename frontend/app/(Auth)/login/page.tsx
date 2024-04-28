@@ -6,14 +6,27 @@ import { MdOutlineEmail } from "react-icons/md";
 import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 import { useRouter } from "next/navigation";
-import jwt from 'jsonwebtoken';
 import Link from "next/link";
 
 export default function Component() {
   const router= useRouter();
+  fetch("/api/admin/validate")
+    .then((response) => {
+      if (response.ok) {
+        return response.json();}
+    })
+    .then((data) => {
+      if (data.includes("Admin")) {
+        router.push("/admin/products");
+      } else if (data.includes("User")) {
+        router.push("/user/dashboard");
+      }
+    }).catch(()=>console.log("not Signed in"))
+
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
   const [error, setError] = useState("");
+
   const login = async () => {
     if (!email) {
       setError("Email is required.");
@@ -35,19 +48,10 @@ export default function Component() {
     });
     if (response.ok) {
       const data = await response.json();
-      const token = data.token; // Assuming the token is returned in the response data
-      document.cookie = `JWT=${token};path=/;max-age=604800`;
-      //check if token is role is admin or user
-      const decoded = jwt.decode(token);
-      if (decoded.role==="Admin")
-      router.push("/admin");
-      else if (decoded.role==="User")
-      router.push("/user");
-    } else if (response.status ===401) {
-      setError("Invalid email or password.");
-    }
-  };
-
+      if (data.userRoles.includes("Admin")) router.push("/admin/products")
+      else if (data.userRoles.includes("User")) router.push("/user/dashboard")
+    }}
+      
   return (
     <div className="flex justify-center items-center h-full w-full drop-shadow-md">
       <div className="border w-[800px] h-[600px] relative">

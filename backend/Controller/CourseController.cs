@@ -33,7 +33,7 @@ namespace backend.Controller
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCourse([FromBody] CreateNewProductDto course)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
             Course newCourse= new()
             {
                 Name = course.Name,
@@ -50,7 +50,7 @@ namespace backend.Controller
         [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetCourse(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
             var course = await _courseRepositry.GetCourse(id,adminId);
             if (course == null)
             {
@@ -62,7 +62,7 @@ namespace backend.Controller
         [HttpGet("{id}/sections")]
         public async Task<IActionResult> GetSections(int id)
         {
-            var adminId = User.GetUserId();
+            var adminId = User.GetId();
             var course = await _courseRepositry.GetCourse(id,adminId);
             if (course == null)
             {

@@ -8,9 +8,8 @@ namespace backend.Extensions
 {
     public static class ClaimsExtensions
     {
-        public static string GetUserId(this ClaimsPrincipal user)
+        public static string GetId(this ClaimsPrincipal user)
         {
-            return user.FindFirstValue("id");
-        }
+            return user.FindFirstValue(ClaimTypes.NameIdentifier);
     }
-}
+}}
