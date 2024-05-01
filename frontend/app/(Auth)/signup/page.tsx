@@ -8,7 +8,6 @@ import { useState } from "react";
 import Logo from "@/components/svg/Logo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import jwt from 'jsonwebtoken';
 
 export default function Component() {
   const router = useRouter();
@@ -58,13 +57,12 @@ export default function Component() {
 
       if (response.ok) {
         const data = await response.json();
-        const token = data.token; // Assuming the token is returned in the response data
-        //save in cookie
-        document.cookie = `JWT=${token};path=/;max-age=604800`;
-        const decoded = jwt.decode(token);
-        if (decoded.role==="Admin")
+        const roles:string[]= data.userRoles;
+        if (roles.includes("Admin")){
+          console.log("Admin");
         router.push("/admin");
-        else if (decoded.role==="User")
+      }
+        else if (roles.includes("User"))
         router.push("/user");
 
       } else if (response.status === 500) {

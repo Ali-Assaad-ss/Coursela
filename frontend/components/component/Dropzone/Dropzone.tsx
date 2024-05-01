@@ -1,61 +1,40 @@
-import { getCookie } from "cookies-next";
-import { useCallback, useState } from "react";
+"use client";
 import { useDropzone } from "react-dropzone";
 import { FaFileUpload } from "react-icons/fa";
-
-export default function Dropzone() {
- let [file, setFile] = useState<File | null>(null); // Specify the type for the 'file' state variable
- const onDrop = useCallback((acceptedFiles: File[]) => { // Specify the type for the 'acceptedFiles' parameter
-    // Do something with the files, such as uploading them or processing them
-    console.log(acceptedFiles[0]);
+import { FaRegTrashAlt } from "react-icons/fa";
+import { LuFileArchive } from "react-icons/lu";
+import {useCallback } from "react";
+export default function Dropzone({url,setUrl,setFile,file,type}:any)
+{
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    //if type is image set the url
+    if(acceptedFiles[0].type.startsWith(type)!=false)
+{
     setFile(acceptedFiles[0]);
- }, []);
- const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
- // Function to check if the file is an image
- const isImage = (file: File): boolean => {
-    return file.type.startsWith("image/");
- };
-//  const uploadFile = async (e) => {
-//     try {
-//        // Make a POST request to the server with the file data
-//        const response = await fetch("api/file/upload", {
-//           method: "POST",
-//           body: ,
-//           headers: {
-//               "Content-Type": "multipart/form-data",
-//               Authorization: "Bearer " + getCookie("JWT"), // Add the JWT token to the headers
-//             },
-//        });
-//        if (response.ok) {
-//         response.json().then((data) => {
-//           console.log(data);
-//         });
-//        } else {
-//           console.error("File upload failed");
-//        }
-//     } catch (error) {
-//        console.error("An error occurred while uploading the file", error);
-//     }
-//  }
-
-
- return (
+    setUrl(URL.createObjectURL(acceptedFiles[0]));}
+    else{alert("invalid file type")}
+    console.log(acceptedFiles[0]);
+  }, []);
   
-    <div {...getRootProps()} className="p-5 flex flex-col items-center">
-      <input {...getInputProps()} />
-      <FaFileUpload className="m-4" />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : file ? (
-        isImage(file) ? (
-          <img src={URL.createObjectURL(file)} alt={file.name} style={{ maxWidth: '100%', maxHeight: '200px' }} />
-        ) : (
-          <p>{file.name}</p>
-        )
-      ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  return(
+    <div>
+      {url?(<div className="w-full items-center justify-center flex flex-col p-5 gap-5">
+        {type=="image" &&<img src={url} alt="image" className="h-52"/>}
+        {type=="video" &&<video src={url} className="h-52" controls/>}
+        {type!="video"&&type!="image"&&<div className="flex flex-col items-center"><LuFileArchive className="text-2xl"/> {file?<p>{file.name}</p>:<p>{url}</p>} </div>}
+         <FaRegTrashAlt className="cursor-pointer hover:text-red-800" onClick={() => {setUrl(null); setFile(null)}} /> </div>):(
+                <div {...getRootProps()} className="p-5 flex flex-col items-center">
+                <input {...getInputProps()} />
+                <FaFileUpload className="m-4" />
+                {isDragActive ? (
+                  <p>Drop the files here ...</p>
+                ) : (
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                )}
+              </div>
       )}
-    </div>
- );
+
+    </div>);
 }

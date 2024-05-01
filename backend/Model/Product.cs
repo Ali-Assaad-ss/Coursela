@@ -12,7 +12,7 @@ namespace backend.Model
         public string Name { get; set; }
         public string? Description { get; set; }
         public double? Price { get; set; }
-        public string? Image { get; set; }
+        public bool Image { get; set; }=false;
         public int Limit { get; set; }
         public bool Visibility {get;set;}
         public Community? Community { get; set; }

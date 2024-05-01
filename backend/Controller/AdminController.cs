@@ -110,6 +110,7 @@ namespace backend.Controller
                     if (roleResult.Succeeded)
                     {
                         var userRoles = await _userManager.GetRolesAsync(user);
+                        await _signinManager.SignInAsync(user, isPersistent: true);
                         return Ok(
                             new NewUserDto
                             {

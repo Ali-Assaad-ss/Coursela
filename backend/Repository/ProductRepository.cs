@@ -69,6 +69,15 @@ namespace backend.Repository
             }
             return null;
         }
+        //add image to product
+        public async Task<bool> AddImage(int id, string adminId)
+        {
+            var product = await GetProduct(id, adminId);
+            if (product == null) return false;
+            product.Image = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
 
 

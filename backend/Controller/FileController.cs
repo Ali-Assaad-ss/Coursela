@@ -2,10 +2,10 @@ using System.Net;
 using backend.Extensions;
 using backend.Interface;
 using backend.Model;
+using backend.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
 
 namespace backend.Controller
 {
@@ -14,16 +14,22 @@ namespace backend.Controller
     public class FileController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public FileController(IProductRepository productRepositry, UserManager<ApplicationUser> userManager)
+        private readonly DigitalProductRepository _digitalProductrepository;
+        private readonly IProductRepository _productRepository;
+
+        public FileController(IProductRepository productRepositry, UserManager<ApplicationUser> userManager, DigitalProductRepository digitalProductRepository, IProductRepository productRepository)
         {
             _userManager = userManager;
+            _digitalProductrepository = digitalProductRepository;
+            _productRepository = productRepository;
+
         }
         [Authorize]
         [HttpPost("product/{id}/image")]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile file, int id)
         {
             var adminId = User.GetId();
-            var fileType = Path.GetExtension(file.FileName);
+            var fileType = Path.GetExtension(file.FileName).ToLower();
             if (fileType != ".jpg" && fileType != ".png" && fileType != ".jpeg")
             {
                 return BadRequest(new { message = "Invalid file type" });
@@ -37,67 +43,55 @@ namespace backend.Controller
             var filePath = Path.Combine(path, fileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
+                if (await _productRepository.AddImage(id, adminId))
                 await file.CopyToAsync(stream);
+                else return BadRequest(new { message = "Product not found" });
             }
             return Ok(fileName);
         }
-        [Authorize]
-        [HttpGet("product/{id}/image")]
-        public async Task<IActionResult> getImage(int id)
-        {
-            var adminId = User.GetId();
+[Authorize]
+[HttpGet("product/{id}/image")]
+public IActionResult GetImage(int id)
+{
+    var adminId = User.GetId();
+    var imageExtensions = new[] { "jpg", "png", "jpeg", "gif" };
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, id.ToString(), "image.jpg");
-            if (!System.IO.File.Exists(path))
-            {
-                path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, id.ToString(), "image.png");
-                if (!System.IO.File.Exists(path))
-                {
-                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, id.ToString(), "image.jpeg");
-                    if (!System.IO.File.Exists(path))
-                    {
-                        return NotFound();
-                    }
-                }
-            }
+    var lastModifiedImage = default((string, DateTime)?);
 
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(path, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-            return File(memory, GetContentType(path), Path.GetFileName(path));
-        }
-        private static string GetContentType(string path)
+    foreach (var extension in imageExtensions)
+    {
+        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, $"{id}", $"image.{extension}");
+
+        if (System.IO.File.Exists(imagePath))
         {
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(path, out string contentType))
+            var lastModified = System.IO.File.GetLastWriteTime(imagePath);
+            if (!lastModifiedImage.HasValue || lastModified > lastModifiedImage.Value.Item2)
             {
-                contentType = "application/octet-stream";
+                lastModifiedImage = (imagePath, lastModified);
             }
-            return contentType;
         }
+    }
+
+    if (lastModifiedImage.HasValue)
+    {
+        return PhysicalFile(lastModifiedImage.Value.Item1, $"image/{Path.GetExtension(lastModifiedImage.Value.Item1).TrimStart('.')}"); // Return the last modified image
+    }
+
+    return NotFound();
+}
 
         [HttpGet("product/{id}/video")]
         [Authorize]
         public IActionResult GetVideo(int id)
         {
             var adminId = User.GetId();
-
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, id.ToString(), "video.mp4");
+
             if (!System.IO.File.Exists(path))
-            {
                 return NotFound();
-            }
 
-            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var response = File(fileStream, "video/mp4");
-            response.EnableRangeProcessing = true;
-
-            return response;
+            return PhysicalFile(path, "video/mp4", enableRangeProcessing: true);
         }
-
 
 
         [Authorize]
@@ -122,6 +116,28 @@ namespace backend.Controller
                 await file.CopyToAsync(stream);
             }
             return Ok(fileName);
+        }
+
+        [HttpPost("product/{id}/file")]
+        [Authorize]
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, int id)
+        {
+            var adminId = User.GetId();
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", adminId, id.ToString());
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            var filePath = Path.Combine(path, file.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                var product = await _digitalProductrepository.AddFile(id, adminId, file.FileName);
+                if (product == null)
+                    return BadRequest(new { message = "Product not found" });
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok(file.FileName);
         }
 
     }

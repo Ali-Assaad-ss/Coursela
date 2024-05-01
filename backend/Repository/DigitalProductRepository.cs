@@ -52,6 +52,18 @@ namespace backend.Repository
             await _context.SaveChangesAsync();
             return DigitalProduct;
         }
+       
+        public async Task<DigitalProduct?> AddFile(int id, string adminId, string fileName)
+        {
+            var product = await GetDigitalProduct(id, adminId);
+            if (product == null)
+            {
+                return null;
+            }
+            product.FileName = fileName;
+            await _context.SaveChangesAsync();
+            return product;
+        }
 
 
     }

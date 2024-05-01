@@ -32,17 +32,11 @@ import { MdOutlineDeleteForever } from "react-icons/md";
 import { TiEdit } from "react-icons/ti";
 import { getCookie } from "cookies-next";
 
-export default function Page({ params }) {
+export default function Page({ params}:any) {
   const [lessons, setLessons] = useState([]);
   const [sectionId, setSectionId] = useState(0);
   async function lessonList() {
-    const response = await fetch(`/api/admin/courses/${params.id}`, {
-      method: "Get",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("JWT"),
-      },
-    });
+    const response = await fetch(`/api/admin/courses/${params.id}`);
     const data = await response.json();
     setSectionId(data.section.id);
     setLessons(data.section.lessons);
@@ -119,7 +113,7 @@ export function Section({ Sectionlessons, onReorderFunction,sectionId}:any) {
       values={Sectionlessons}
       onReorder={onReorderFunction}
     >
-      {Sectionlessons.map((lesson) => (
+      {Sectionlessons.map((lesson:any) => (
         <LessonItem lesson={lesson} key={lesson.id} />
       ))}
       <div className="flex justify-left gap-4">
@@ -185,10 +179,6 @@ async function deleteLesson(){
     if (true){
     let url = `/api/admin/course/${courseId}/sections/${lesson.id}`;
     fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("JWT"),
-      },
       method: "DELETE",
     }).then((res) => {
       if (res.ok) {
@@ -253,7 +243,7 @@ export function LessonDialog() {
   );
 }
 export function SectionDialog({ParentSectionId}:{ParentSectionId:number}) {
-  const createSection = (e) => {
+  const createSection = (e:any) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const title = formData.get("title");
@@ -261,7 +251,6 @@ export function SectionDialog({ParentSectionId}:{ParentSectionId:number}) {
     fetch(url, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie("JWT"),
       },
       method: "POST",
       body: JSON.stringify({ title,ParentSectionId}),

@@ -33,8 +33,7 @@ export default function New({products,setProducts}:any) {
     let url = "/api/admin/product";
     fetch(url, {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie('JWT'),
+        "Content-Type": "application/json"
       },
       method: "POST",
       body: JSON.stringify({ name, type }),

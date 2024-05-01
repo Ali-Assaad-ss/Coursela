@@ -12,6 +12,7 @@ namespace backend.Interface
         Task<List<AdminProductTableDto>> GetProducts(string adminId);
         Task<Product?> GetProduct(int id, string adminId);
         Task<Product?> DeleteProduct(int id, string adminId);
+        Task<bool> AddImage(int id, string adminId);
 
     }
 }

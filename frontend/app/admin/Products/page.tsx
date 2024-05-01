@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import New from "./newLS";
 import { ProductTable } from "./ProductTable";
 import { columns } from "./Colums";
-import { getCookie  } from 'cookies-next';
 export default function page() {
   const [products, setProducts] = useState([]);
 
@@ -11,8 +10,7 @@ export default function page() {
     const response = await fetch("/api/admin/products", {
       method: "Get",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getCookie('JWT'),
+        "Content-Type": "application/json"
       },
     });
     const data = await response.json();
