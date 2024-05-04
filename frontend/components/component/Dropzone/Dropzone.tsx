@@ -21,8 +21,8 @@ export default function Dropzone({url,setUrl,setFile,file,type}:any)
   return(
     <div>
       {url?(<div className="w-full items-center justify-center flex flex-col p-5 gap-5">
-        {type=="image" &&<img src={url} alt="image" className="h-52"/>}
-        {type=="video" &&<video src={url} className="h-52" controls/>}
+        {type=="image" &&<img src={url} alt="image" className="h-96"/>}
+        {type=="video" &&<video src={url} className="h-96" controls/>}
         {type!="video"&&type!="image"&&<div className="flex flex-col items-center"><LuFileArchive className="text-2xl"/> {file?<p>{file.name}</p>:<p>{url}</p>} </div>}
          <FaRegTrashAlt className="cursor-pointer hover:text-red-800" onClick={() => {setUrl(null); setFile(null)}} /> </div>):(
                 <div {...getRootProps()} className="p-5 flex flex-col items-center">

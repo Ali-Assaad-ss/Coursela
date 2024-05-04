@@ -15,23 +15,6 @@ namespace backend.Repository
         {
             _context = context;
         }
-        public async Task AddSection(Section section)
-        {
-            _context.Sections.Add(section);
-            await _context.SaveChangesAsync();
-        }
-        //delete course
-        public async Task<bool> DeleteSection(int id, string adminId)
-        {
-            var section = await _context.Sections.Include(x=>x.Lessons).Where(x => x.Id == id).FirstOrDefaultAsync();
-            if (section == null || section.AdminId != adminId) return false;
-            var course=await _context.Courses.Where(x=>x.SectionId==id).FirstOrDefaultAsync();
-            if (course!=null) return false;
-            _context.Lessons.RemoveRange(section.Lessons);
-            _context.Sections.Remove(section);
-            await _context.SaveChangesAsync();
-            return true;
-        }
         public async Task<Section?> GetSection(int id, string adminId)
         {
             {

@@ -249,21 +249,7 @@ namespace backend.Controller
             if (section == null) return NotFound("section not found");
             return Ok(section);
         }
-
-
-        //deleting a section
-        [HttpDelete("course/sections/{sectionId}")]
-        public async Task<IActionResult> DeleteSection(int sectionId)
-        {
-            var adminId = User.GetId();
-
-            if (await _sectionRepository.DeleteSection(sectionId, adminId))
-            {
-                return Ok("Section deleted successfully");
-            }
-            return NotFound("section not found");
-        }
-
+        
         //get a lesson by id
         [HttpGet("courses/lessons/{lessonId}")]
         public async Task<IActionResult> GetLesson(int lessonId)
