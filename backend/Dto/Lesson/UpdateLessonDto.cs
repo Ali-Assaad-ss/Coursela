@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace backend.Dto.Lesson
 {
-    public class NewLessonDto
+    public class UpdateLessonDto
     {
         public string Title { get; set; }
-        public string Type { get; set; }
-        public int ParentSectionId { get; set; }
+        public string Content { get; set; }
+        public string Visibility { get; set; }
+        public string? Description { get; set; }
     }
 }

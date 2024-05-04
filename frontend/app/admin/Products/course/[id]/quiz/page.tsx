@@ -17,7 +17,7 @@ import { NewMcq, NewSubj } from "./questions";
 import { Reorder } from "framer-motion";
 import { useState } from "react";
 
-export default function page() {
+export default function QuizPage() {
   const initialItems = [{Type:"S",id:"1"},{Type:"S",id:"2"} ,{Type:"M",id:"3"}];
 
   const [items, setItems] = useState(initialItems);

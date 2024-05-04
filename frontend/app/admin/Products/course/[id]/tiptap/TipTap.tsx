@@ -3,7 +3,7 @@ import "./style.css";
 import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
-import { EditorProvider, useCurrentEditor } from "@tiptap/react";
+import {useCurrentEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import React from "react";
 
@@ -27,13 +27,11 @@ import {
 } from "react-icons/md";
 import { BsBlockquoteLeft } from "react-icons/bs";
 import { VscHorizontalRule } from "react-icons/vsc";
-import { LuRedo, LuSpace, LuUndo } from "react-icons/lu";
-import { IoCodeSlashOutline, IoColorPaletteOutline } from "react-icons/io5";
-import { Textarea } from "@/components/ui/textarea";
+import {LuSpace} from "react-icons/lu";
+import { IoCodeSlashOutline } from "react-icons/io5";
 
-const MenuBar = () => {
+export const MenuBar = () => {
   const { editor } = useCurrentEditor();
-
   if (!editor) {
     return null;
   }
@@ -202,7 +200,7 @@ const MenuBar = () => {
   );
 };
 
-const extensions = [
+export const extensions = [
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
   TextStyle.configure({ types: [ListItem.name] }),
   StarterKit.configure({
@@ -216,15 +214,3 @@ const extensions = [
     },
   }),
 ];
-
-export default function TipTap() {
-  return (
-    <div>
-      <EditorProvider
-        slotBefore={<MenuBar />}
-        extensions={extensions}
-        children=""
-      ></EditorProvider>
-    </div>
-  );
-};

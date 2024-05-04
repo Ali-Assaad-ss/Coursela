@@ -3,13 +3,14 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MdOutlineEmail } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "@/components/svg/Logo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function Component() {
   const router= useRouter();
+  useEffect(() =>{
   fetch("/api/admin/validate")
     .then((response) => {
       if (response.ok) {
@@ -21,7 +22,7 @@ export default function Component() {
       } else if (data.includes("User")) {
         router.push("/user/dashboard");
       }
-    }).catch(()=>console.log("not Signed in"))
+    }).catch(()=>console.log("not Signed in"))},[])
 
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");

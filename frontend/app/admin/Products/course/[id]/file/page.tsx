@@ -6,10 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
-export default function page() {
+export default function Filepage({lesson}) {
   return (
     <>
-      <h1 className="text-2xl font-bold m-5 mt-7 ml-10">Image Lesson</h1>
+      <h1 className="text-2xl font-bold m-5 mt-7 ml-10">File</h1>
       <div className="flex flex-col p-16 gap-10 border rounded-xl mx-10">
         <div className="flex">
           <p className="text-xl">Title</p>
@@ -27,24 +27,11 @@ export default function page() {
           <p className="text-xl">Source</p>
           <Tabs defaultValue="account" className="border rounded-xl pb-5 w-[80%] ml-auto">
           <TabsList className="mb-5 flex">
-            <TabsTrigger value="account" className="w-[50%]">
-              File
-            </TabsTrigger>
-            <TabsTrigger value="password" className="w-[50%]">
-              Link
+            <TabsTrigger value="account" className="w-[100%]">
+              File File
             </TabsTrigger>
           </TabsList>
           <TabsContent value="account"><MyDropzone /></TabsContent>
-          
-          <TabsContent value="password" className="">
-            <div className="flex mx-5">
-              <p className="text-xl">Link</p>
-              <Input
-                className="w-[80%] ml-auto"
-                placeholder="Enter Link here"
-              ></Input>
-            </div>
-          </TabsContent>
         </Tabs>
         </div>
         <div className="flex gap-10 text-xl">

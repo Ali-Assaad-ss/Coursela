@@ -9,9 +9,7 @@ namespace backend.Model
     {
 
         public int Id { get; set; }
-        public string Title { get; set; }
         public List<Lesson>? Lessons { get; set; }
-        public string Visibility { get; set; }
         public string AdminId { get; set; }
     }
 }

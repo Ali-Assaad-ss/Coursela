@@ -78,6 +78,19 @@ namespace backend.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+        //update product
+        public async Task<Product?> UpdateProduct(int id, string adminId, UpdateProductDto product)
+        {
+            var oldProduct = await GetProduct(id, adminId);
+            if (oldProduct == null) return null;
+            oldProduct.Name = product.Name;
+            oldProduct.Price = product.Price;
+            oldProduct.Description = product.Description;
+            oldProduct.Limit = product.Limit;
+            oldProduct.Visibility = product.Visibility;
+            await _context.SaveChangesAsync();
+            return oldProduct;
+        }
 
 
 

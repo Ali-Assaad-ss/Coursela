@@ -22,9 +22,7 @@ namespace backend.Repository
 
             var section = new Section
             {
-                Title = course.Name,
                 Lessons = [],
-                Visibility = "visible",
                 AdminId = adminId
             };
             await _context.Sections.AddAsync(section);
@@ -39,6 +37,7 @@ namespace backend.Repository
         public async Task<Course?> GetCourse(int id, string adminId)
         {
             var course= await _context.Courses.Include(x=>x.Section).ThenInclude(x=>x.Lessons).Where(x=>x.Offerings.Any(x=>x.AdminId==adminId) && x.Id==id).FirstOrDefaultAsync();
+            course.Section.Lessons=course.Section.Lessons.OrderBy(x=>x.Order).ToList();
             return course;
         }
     }

@@ -38,20 +38,6 @@ namespace backend.Repository
             }
             return null;
         }
-        public async Task<DigitalProduct?> UpdateDigitalProduct(int id, UpdateDigitalProductDto dto, string adminId){
-            var DigitalProduct=await GetDigitalProduct(id,adminId);
-            if(DigitalProduct==null)
-            {
-                return null;
-            }
-            DigitalProduct.Name=dto.Title;
-            DigitalProduct.Description=dto.Description;
-            DigitalProduct.Price=dto.Price;
-            DigitalProduct.Limit=dto.Limit;
-            DigitalProduct.Visibility=dto.Visibility;
-            await _context.SaveChangesAsync();
-            return DigitalProduct;
-        }
        
         public async Task<DigitalProduct?> AddFile(int id, string adminId, string fileName)
         {

@@ -250,15 +250,6 @@ namespace backend.Controller
             return Ok(section);
         }
 
-        //creating a new section
-        [HttpPost("course/sections")]
-        public async Task<IActionResult> CreateSection([FromBody] CreateSectionDto section)
-        {
-            var adminId = User.GetId();
-            var newSection = await _lessonRepository.AddSection(adminId, section);
-            if (newSection == null) return Unauthorized("You don't have access to this course");
-            return Ok(newSection);
-        }
 
         //deleting a section
         [HttpDelete("course/sections/{sectionId}")]
@@ -272,7 +263,19 @@ namespace backend.Controller
             }
             return NotFound("section not found");
         }
-        [HttpPost("Lesson")]
+
+        //get a lesson by id
+        [HttpGet("courses/lessons/{lessonId}")]
+        public async Task<IActionResult> GetLesson(int lessonId)
+        {
+            var adminId = User.GetId();
+            var lesson = await _lessonRepository.GetLesson(lessonId, adminId);
+            if (lesson == null) return NotFound("Lesson not found");
+            return Ok(lesson);
+        }
+
+        //ceating a new lesson
+        [HttpPost("courses/lessons")]
         public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto)
         {
             var adminId = User.GetId();
@@ -280,6 +283,40 @@ namespace backend.Controller
             if (newLesson == null) return Unauthorized("You don't have access to this course");
             return Ok(newLesson);
         }
+
+        //delete a lesson
+        [HttpDelete("courses/lessons/{lessonId}")]
+        public async Task<IActionResult> DeleteLesson(int lessonId)
+        {
+            var adminId = User.GetId();
+            if (await _lessonRepository.DeleteLesson(lessonId, adminId))
+            {
+                return Ok("Lesson deleted successfully");
+            }
+            return NotFound("Lesson not found");
+        }
+        //update a lesson   
+        [HttpPut("courses/lessons/{lessonId}")]
+        public async Task<IActionResult> UpdateLesson(int lessonId, [FromBody] UpdateLessonDto lessonDto)
+        {
+            var adminId = User.GetId();
+            var lesson = await _lessonRepository.UpdateLesson(lessonId, adminId, lessonDto);
+            if (lesson == null) return NotFound("Lesson not found");
+            return Ok("Lesson updated successfully");
+        }
+
+
+        //sort lessons
+        [HttpPut("courses/lessons/sort")]
+        public async Task<IActionResult> SortLessons([FromBody] List<int>idArray)
+        {
+            var adminId = User.GetId();
+            var lessons =await _lessonRepository.SortLessons(adminId, idArray);
+            if (lessons != null)
+                return Ok(lessons);
+            return NotFound("Lesson not found");
+        }
+
         [HttpGet("digitaldownload/{id}")]
         public async Task<IActionResult> GetDigitalDownload(int id)
         {
@@ -289,12 +326,13 @@ namespace backend.Controller
             if (digitalDownload == null) return NotFound("DigitalDownload not found");
             return Ok(digitalDownload);
         }
-        [HttpPut("digitaldownload/{id}")]
-        public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateDigitalProductDto dto)
+        [HttpPut("products/{id}")]
+        public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateProductDto dto)
         {
             var adminId = User.GetId();
-            var digitalDownload = await _digitalProductRepository.UpdateDigitalProduct(id, dto, adminId);
-            return Ok(digitalDownload);
+            var product = await _productRepositry.UpdateProduct(id,adminId,dto);
+            return Ok(product);
         }
+
     }
 }
