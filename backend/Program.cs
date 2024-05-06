@@ -60,6 +60,7 @@ builder.Services.AddScoped<SectionRepository>();
 builder.Services.AddScoped<LessonRepository>();
 builder.Services.AddScoped<DigitalProductRepository>();
 builder.Services.AddScoped<CoachingRepository>();
+builder.Services.AddScoped<QuizRepository>();
 
 var app = builder.Build();
 

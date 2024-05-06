@@ -22,7 +22,7 @@ namespace backend.Repository
         }
         public async Task<Lesson?> GetLesson(int lessonId, string adminId)
         {
-            var lesson = await _context.Lessons.Where(x => x.Id == lessonId && x.ParentSection.AdminId == adminId).FirstOrDefaultAsync();
+            var lesson = await _context.Lessons.Include(x=>x.Quiz).ThenInclude(x=>x.Questions).Include(x=>x.ChildSection).Where(x => x.Id == lessonId && x.ParentSection.AdminId == adminId).FirstOrDefaultAsync();
             return lesson;
         }
         public async Task<Lesson?> AddLesson(string adminId, NewLessonDto lessonDto)
@@ -33,6 +33,7 @@ namespace backend.Repository
             var section = await _context.Sections.Include(x => x.Lessons).Where(x => x.Id == lessonDto.ParentSectionId).FirstOrDefaultAsync();
             if (section == null || section.AdminId != adminId) return null;
             Section childSection = null;
+            Quiz quiz = null;
             if (lessonDto.Type == "section")
             {
                 childSection = new Section
@@ -41,6 +42,15 @@ namespace backend.Repository
                     AdminId = adminId,
                 };
                 await _context.Sections.AddAsync(childSection);
+                await _context.SaveChangesAsync();
+            }
+            if (lessonDto.Type == "quiz")
+            {
+                quiz = new Quiz
+                {
+                    Questions=[],
+                };
+                await _context.Quizzes.AddAsync(quiz);
                 await _context.SaveChangesAsync();
             }
             int order = section.Lessons.Count;
@@ -54,6 +64,9 @@ namespace backend.Repository
             };
             if (lessonDto.Type == "section")
                 lesson.ChildSectionId = childSection.Id;
+
+            if (lessonDto.Type == "quiz")
+                lesson.QuizId = quiz.Id;
 
             await _context.Lessons.AddAsync(lesson);
             await _context.SaveChangesAsync();

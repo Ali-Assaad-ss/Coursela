@@ -18,5 +18,7 @@ namespace backend.Model
         public int? ChildSectionId { get; set; }=null;
         public Section? ChildSection { get; set; }
         public int Order { get; set; }
+        public int? QuizId { get; set; }
+        public Quiz? Quiz { get; set; }
     }
 }

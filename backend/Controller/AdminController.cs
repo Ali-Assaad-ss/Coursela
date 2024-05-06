@@ -2,7 +2,7 @@ using System.Security.Claims;
 using backend.Dto.DigitalProduct;
 using backend.Dto.Lesson;
 using backend.Dto.Product;
-using backend.Dto.Section;
+using backend.Dto.Quiz;
 using backend.Dto.User;
 using backend.Extensions;
 using backend.Interface;
@@ -29,9 +29,11 @@ namespace backend.Controller
         private readonly LessonRepository _lessonRepository;
         private readonly DigitalProductRepository _digitalProductRepository;
         private readonly CoachingRepository _coachingRepository;
+        private readonly QuizRepository _quizRepository;
         public AdminController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
         ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository,
-        IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository, CoachingRepository coachingRepository)
+        IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository,
+         CoachingRepository coachingRepository, QuizRepository quizRepository)
         {
             _signinManager = signInManager;
             _userManager = userManager;
@@ -42,6 +44,8 @@ namespace backend.Controller
             _lessonRepository = lessonRepository;
             _digitalProductRepository = digitalProductRepository;
             _coachingRepository = coachingRepository;
+            _quizRepository = quizRepository;
+
         }
 
         [HttpPost("login")]
@@ -239,17 +243,6 @@ namespace backend.Controller
             return BadRequest("Invalid product type");
         }
 
-        //getting all the sections of a course
-        [HttpGet("course/sections/{id}")]
-        public async Task<IActionResult> GetCourseSections(int id)
-        {
-            var adminId = User.GetId();
-
-            var section = await _sectionRepository.GetSection(id, adminId);
-            if (section == null) return NotFound("section not found");
-            return Ok(section);
-        }
-        
         //get a lesson by id
         [HttpGet("courses/lessons/{lessonId}")]
         public async Task<IActionResult> GetLesson(int lessonId)
@@ -301,6 +294,15 @@ namespace backend.Controller
             if (lessons != null)
                 return Ok(lessons);
             return NotFound("Lesson not found");
+        }
+        //add a question to quiz
+        [HttpPost("courses/lessons/quiz/{quizId}/question")]
+        public async Task<IActionResult> AddQuestion(int quizId, [FromBody] QuestionDto questionDto)
+        {
+            var adminId = User.GetId();
+            var question = await _quizRepository.AddQuestion(questionDto ,quizId, adminId);
+            if (question == null) return NotFound("Quiz not found");
+            return Ok(question);
         }
 
         [HttpGet("digitaldownload/{id}")]

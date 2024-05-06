@@ -7,8 +7,9 @@ import {useCallback } from "react";
 export default function Dropzone({url,setUrl,setFile,file,type}:any)
 {
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log(acceptedFiles[0].type)
     //if type is image set the url
-    if(acceptedFiles[0].type.startsWith(type)!=false)
+    if(acceptedFiles[0].type.includes(type)!=false)
 {
     setFile(acceptedFiles[0]);
     setUrl(URL.createObjectURL(acceptedFiles[0]));}

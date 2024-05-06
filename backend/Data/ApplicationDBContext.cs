@@ -220,18 +220,11 @@ namespace backend.Data
             WithMany(s => s.Lessons).
             HasForeignKey(l => l.ParentSectionId);
 
-            //lesson quiz relationship using discriminator
-            builder.Entity<Lesson>()
-            .HasDiscriminator<string>("LessonType")
-            .HasValue<Lesson>("Lesson")
-            .HasValue<Quiz>("Quiz");
-
-
             //quiz question relationship one to many
-            builder.Entity<Question>()
-            .HasOne(q => q.Quiz)
-            .WithMany(q => q.Questions)
-            .HasForeignKey(q => q.QuizId);
+            builder.Entity<Quiz>()
+            .HasMany(q => q.Questions).
+            WithOne(q => q.Quiz).
+            HasForeignKey(q => q.QuizId);
 
             //response question relationship
             builder.Entity<Response>()
