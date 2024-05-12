@@ -1,0 +1,28 @@
+.sideButton{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 45px;
+    height: 45px;
+}
+.sideButton:hover{
+    cursor: pointer;
+}
+.editButton{
+background-image:url("./icons/edit.png");
+}
+.editButton:hover{
+background-image:url("./icons/edit.gif");
+}
+.deleteButton{
+background-image:url("./icons/trash.png");
+}
+.deleteButton:hover{
+background-image:url("./icons/trash.gif");
+}
+.settingsButton{
+background-image:url("./icons/settings.png");
+}
+.settingsButton:hover{
+background-image:url("./icons/settings.gif");
+}
