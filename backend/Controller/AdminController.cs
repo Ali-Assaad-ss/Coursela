@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using backend.Dto.DigitalProduct;
+using backend.Dto.Coaching;
 using backend.Dto.Lesson;
 using backend.Dto.Product;
 using backend.Dto.Quiz;
@@ -81,11 +81,11 @@ namespace backend.Controller
             await _signinManager.SignOutAsync();
             return Ok("Logged out successfully");
         }
-        
+
         [HttpGet("validate")]
         public async Task<IActionResult> Validate()
         {
-            var role= User.FindAll(ClaimTypes.Role).Select(x=>x.Value);
+            var role = User.FindAll(ClaimTypes.Role).Select(x => x.Value);
             return Ok(role);
         }
 
@@ -139,9 +139,57 @@ namespace backend.Controller
                 return StatusCode(500, e);
             }
         }
+        //creating a new product
+        [HttpPost("product")]
+        public async Task<IActionResult> AddProduct([FromBody] CreateNewProductDto productDto)
+        {
+            //get the admin id
+            var adminId = User.GetId();
+            int productId;
+            string type;
 
-        //getting all the products of the user
+            //create the product
+            if (productDto.Type == "Course")
+            {
+                Course newCourse = new()
+                {
+                    Name = productDto.Name,
+                };
+                await _courseRepository.AddCourse(newCourse, adminId);
+                productId = newCourse.Id;
+                type = "Course";
+            }
+            else if (productDto.Type == "DigitalDownload")
+            {
+                var createdDigitalDownload = await _digitalProductRepository.AddDigitalProduct(productDto);
+                type = "DigitalDownload";
+                productId = createdDigitalDownload.Id;
+            }
+            else if (productDto.Type == "Coaching")
+            {
+                var createdCoaching = await _coachingRepository.AddCoaching(productDto);
+                productId = createdCoaching.Id;
+                type = "Coaching";
 
+            }
+            else return BadRequest("Invalid product type");
+
+            var NewProductDto = new NewProductDto
+            {
+                Id = productId,
+                Name = productDto.Name,
+                Type = type,
+                members = 0
+            };
+            var offer = new Offer
+            {
+                AdminId = adminId,
+                ProductId = productId
+            };
+            await _offerRepository.AddOffer(offer);
+            return Ok(NewProductDto);
+        }
+        //get products of the admin
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {
@@ -149,17 +197,15 @@ namespace backend.Controller
             var products = await _productRepositry.GetProducts(AdminId);
             return Ok(products);
         }
-
-        //getting a Course by id
-        [HttpGet("courses/{id}")]
-        public async Task<IActionResult> GetCourses(int id)
+        //update product
+        [HttpPut("products/{id}")]
+        public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateProductDto dto)
         {
             var adminId = User.GetId();
-
-            var courses = await _courseRepository.GetCourse(id, adminId);
-            return Ok(courses);
+            var product = await _productRepositry.UpdateProduct(id, adminId, dto);
+            return Ok(product);
         }
-        //deleting a Product by id
+        //delete product by id
         [HttpDelete("products/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -170,77 +216,14 @@ namespace backend.Controller
             return Ok("course deleted successfully");
         }
 
-        //creating a new product
-        [HttpPost("product")]
-        public async Task<IActionResult> AddProduct([FromBody] CreateNewProductDto productDto)
+        //ceating a new lesson
+        [HttpPost("courses/lessons")]
+        public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto)
         {
-            //get the admin id
             var adminId = User.GetId();
-            //create the product
-            //case of course
-            if (productDto.Type == "Course")
-            {
-                Course newCourse = new()
-                {
-                    Name = productDto.Name,
-                };
-                var CreatedCourse = await _courseRepository.AddCourse(newCourse, adminId);
-                //create the offer many to many realtion
-                var offer = new Offer
-                {
-                    AdminId = adminId,
-                    ProductId = newCourse.Id,
-                };
-
-                await _offerRepository.AddOffer(offer);
-                var NewProductDto = new NewProductDto
-                {
-                    Id = newCourse.Id,
-                    Name = newCourse.Name,
-                    Type = "Course",
-                    members = 0
-                };
-                return Ok(NewProductDto);
-            }
-            else if (productDto.Type == "DigitalDownload")
-            {
-                var createdDigitalDownload = await _digitalProductRepository.AddDigitalProduct(productDto);
-                var NewProductDto = new NewProductDto
-                {
-                    Id = createdDigitalDownload.Id,
-                    Name = createdDigitalDownload.Name,
-                    Type = "DigitalDownload",
-                    members = 0
-                };
-                var offer = new Offer
-                {
-                    AdminId = adminId,
-                    ProductId = createdDigitalDownload.Id,
-                };
-                await _offerRepository.AddOffer(offer);
-
-                return Ok(NewProductDto);
-            }
-            else if (productDto.Type == "Coaching")
-            {
-                var createdCoaching = await _coachingRepository.AddCoaching(productDto);
-                var NewProductDto = new NewProductDto
-                {
-                    Id = createdCoaching.Id,
-                    Name = createdCoaching.Name,
-                    Type = "Coaching",
-                    members = 0
-                };
-                var offer = new Offer
-                {
-                    AdminId = adminId,
-                    ProductId = createdCoaching.Id,
-                };
-                await _offerRepository.AddOffer(offer);
-                return Ok(NewProductDto);
-
-            }
-            return BadRequest("Invalid product type");
+            var newLesson = await _lessonRepository.AddLesson(adminId, LessonDto);
+            if (newLesson == null) return Unauthorized("You don't have access to this course");
+            return Ok(newLesson);
         }
 
         //get a lesson by id
@@ -252,15 +235,24 @@ namespace backend.Controller
             if (lesson == null) return NotFound("Lesson not found");
             return Ok(lesson);
         }
-
-        //ceating a new lesson
-        [HttpPost("courses/lessons")]
-        public async Task<IActionResult> AddLesson([FromBody] NewLessonDto LessonDto)
+        //update a lesson   
+        [HttpPut("courses/lessons/{lessonId}")]
+        public async Task<IActionResult> UpdateLesson(int lessonId, [FromBody] UpdateLessonDto lessonDto)
         {
             var adminId = User.GetId();
-            var newLesson = await _lessonRepository.AddLesson(adminId, LessonDto);
-            if (newLesson == null) return Unauthorized("You don't have access to this course");
-            return Ok(newLesson);
+            var lesson = await _lessonRepository.UpdateLesson(lessonId, adminId, lessonDto);
+            if (lesson == null) return NotFound("Lesson not found");
+            return Ok("Lesson updated successfully");
+        }
+        //sort lessons
+        [HttpPut("courses/lessons/sort")]
+        public async Task<IActionResult> SortLessons([FromBody] List<int> idArray)
+        {
+            var adminId = User.GetId();
+            var lessons = await _lessonRepository.SortLessons(adminId, idArray);
+            if (lessons != null)
+                return Ok(lessons);
+            return NotFound("Lesson not found");
         }
 
         //delete a lesson
@@ -274,45 +266,36 @@ namespace backend.Controller
             }
             return NotFound("Lesson not found");
         }
-        //update a lesson   
-        [HttpPut("courses/lessons/{lessonId}")]
-        public async Task<IActionResult> UpdateLesson(int lessonId, [FromBody] UpdateLessonDto lessonDto)
-        {
-            var adminId = User.GetId();
-            var lesson = await _lessonRepository.UpdateLesson(lessonId, adminId, lessonDto);
-            if (lesson == null) return NotFound("Lesson not found");
-            return Ok("Lesson updated successfully");
-        }
-
-
-        //sort lessons
-        [HttpPut("courses/lessons/sort")]
-        public async Task<IActionResult> SortLessons([FromBody] List<int>idArray)
-        {
-            var adminId = User.GetId();
-            var lessons =await _lessonRepository.SortLessons(adminId, idArray);
-            if (lessons != null)
-                return Ok(lessons);
-            return NotFound("Lesson not found");
-        }
 
         //add a question to quiz
         [HttpPost("courses/lessons/quiz/{quizId}/question")]
         public async Task<IActionResult> AddQuestion(int quizId, [FromBody] QuestionDto questionDto)
         {
             var adminId = User.GetId();
-            var question = await _quizRepository.AddQuestion(questionDto ,quizId, adminId);
+            var question = await _quizRepository.AddQuestion(questionDto, quizId, adminId);
             if (question == null) return NotFound("Quiz not found");
             return Ok(question);
         }
+        //update a question
         [HttpPut("courses/lessons/quiz/question/{id}")]
         public async Task<IActionResult> UpdateQuestion(int id, [FromBody] QuestionDto questionDto)
         {
             var adminId = User.GetId();
-            var question = await _quizRepository.UpdateQuestion(questionDto ,id, adminId);
+            var question = await _quizRepository.UpdateQuestion(questionDto, id, adminId);
             if (question == null) return NotFound("Quiz not found");
             return Ok(question);
         }
+        //sort questions
+        [HttpPut("courses/lessons/quiz/sort")]
+        public async Task<IActionResult> SortQuiz([FromBody] List<int> idArray)
+        {
+            var adminId = User.GetId();
+            var quiz = await _quizRepository.SortQuestions(adminId, idArray);
+            if (quiz != null)
+                return Ok(quiz);
+            return NotFound("Lesson not found");
+        }
+        //delete a question
         [HttpDelete("courses/lessons/quiz/question/{id}")]
         public async Task<IActionResult> DeleteQuestion(int id)
         {
@@ -321,31 +304,43 @@ namespace backend.Controller
             if (!question) return NotFound("Quiz not found");
             return Ok(question);
         }
-        [HttpPut("courses/lessons/quiz/sort")]
-        public async Task<IActionResult> SortQuiz([FromBody] List<int>idArray)
+
+        //get course by id
+        [HttpGet("courses/{id}")]
+        public async Task<IActionResult> GetCourses(int id)
         {
             var adminId = User.GetId();
-            var quiz =await _quizRepository.SortQuestions(adminId, idArray);
-            if (quiz != null)
-                return Ok(quiz);
-            return NotFound("Lesson not found");
+
+            var courses = await _courseRepository.GetCourse(id, adminId);
+            return Ok(courses);
         }
 
+        //get digital download by id
         [HttpGet("digitaldownload/{id}")]
         public async Task<IActionResult> GetDigitalDownload(int id)
         {
             var adminId = User.GetId();
-
             var digitalDownload = await _digitalProductRepository.GetDigitalProduct(id, adminId);
             if (digitalDownload == null) return NotFound("DigitalDownload not found");
             return Ok(digitalDownload);
         }
-        [HttpPut("products/{id}")]
-        public async Task<IActionResult> UpdateDigitalDownload(int id, [FromBody] UpdateProductDto dto)
+        //get coaching by id
+        [HttpGet("coaching/{id}")]
+        public async Task<IActionResult> GetCoaching(int id)
         {
             var adminId = User.GetId();
-            var product = await _productRepositry.UpdateProduct(id,adminId,dto);
-            return Ok(product);
+            var coaching = await _coachingRepository.GetCoaching(id, adminId);
+            if (coaching == null) return NotFound("Coaching not found");
+            return Ok(coaching);
+        }
+        //update coaching
+        [HttpPut("coaching/{id}")]
+        public async Task<IActionResult> UpdateCoaching(int id, [FromBody] UpdateCoachingDto coachingDto)
+        {
+            var adminId = User.GetId();
+            var coaching = await _coachingRepository.UpdateCoaching(id, adminId, coachingDto);
+            if (coaching == null) return NotFound("Coaching not found");
+            return Ok(coaching);
         }
 
     }
