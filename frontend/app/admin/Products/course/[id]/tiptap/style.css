@@ -46,9 +46,6 @@ hr {
   /* border-top: 2px solid rgba(#0d0d0d, 0.1); */
   margin: 2rem 0;
 }
-ul {
-  list-style-type: disc;
-}
 
 ol {
   list-style-type: decimal;
@@ -88,15 +85,14 @@ p {
   font-weight: 400;
   line-height: 1.5rem;
 }
-.tiptap{
-    border: 1px solid #e2e8f0;
-    padding: 5px;
-    border-radius: 15px;
-    resize: vertical;
-    min-height: 200px;
-    position: static;
-    &:focus{
-        outline: none;
-    }
-
+.tiptap {
+  border: 1px solid #e2e8f0;
+  padding: 5px;
+  border-radius: 15px;
+  resize: vertical;
+  min-height: 200px;
+  position: static;
+  &:focus {
+    outline: none;
+  }
 }

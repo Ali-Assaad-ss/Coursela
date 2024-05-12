@@ -219,12 +219,13 @@ namespace backend.Data
             HasOne(l => l.ParentSection).
             WithMany(s => s.Lessons).
             HasForeignKey(l => l.ParentSectionId);
+            
 
             //quiz question relationship one to many
             builder.Entity<Quiz>()
             .HasMany(q => q.Questions).
             WithOne(q => q.Quiz).
-            HasForeignKey(q => q.QuizId);
+            HasForeignKey(q => q.QuizId).OnDelete(DeleteBehavior.Cascade);
 
             //response question relationship
             builder.Entity<Response>()

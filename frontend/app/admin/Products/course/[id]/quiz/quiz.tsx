@@ -14,9 +14,26 @@ import {
 import { Mcq, Subj } from "./questions";
 
 import { Reorder } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+
+
+
+async function order(e: []) {
+  const a: number[] = [];
+  e.forEach((element: any) => {
+    a.push(element.id);
+  });
+  const response = await fetch("/api/admin/courses/lessons/quiz/sort", {
+    method: "PUT",
+    body: JSON.stringify(a),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 
 export default function QuizPage({ lesson }) {
   const [title, setTitle] = useState(lesson.title);
@@ -45,7 +62,10 @@ export default function QuizPage({ lesson }) {
             value={description}
           />
         </div>
-        <Reorder.Group axis="y" values={questions} onReorder={setQuestions}>
+        <Reorder.Group axis="y" values={questions} onReorder={(e)=>{
+          order(e);
+          setQuestions(e);
+          }}>
           {questions.map((item: any) => (
             <Reorder.Item key={item.id} value={item}>
               {item.questionType == "mcq" ? (
@@ -67,7 +87,7 @@ export default function QuizPage({ lesson }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={
               ()=>{
-                const modifiedQuestions=[...questions,{questionType:"mcq"}]
+                const modifiedQuestions=[...questions,{questionType:"mcq",method:"POST"}]
                 console.log(modifiedQuestions)
                 setQuestions(modifiedQuestions)
               }
@@ -76,7 +96,7 @@ export default function QuizPage({ lesson }) {
             <DropdownMenuItem 
             onClick={
               ()=>{
-                const modifiedQuestions=[...questions,{questionType:"subjective"}]
+                const modifiedQuestions=[...questions,{questionType:"subjective",method:"POST"}]
                 console.log(modifiedQuestions)
                 setQuestions(modifiedQuestions)
               }

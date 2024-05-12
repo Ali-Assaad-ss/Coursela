@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import TextPage from '../text/text';
 import VideoPage from '../video/videoLesson';
 import ImagePage from '../image/image';
-import FilePage from '../file/page';
-import PdfPage from '../pdf/page';
+import FilePage from '../file/file';
+import PdfPage from '../pdf/pdf';
+import QuizPage from '../quiz/quiz';
 
 export default function Lesson({ params }: any) {
     // Use state to store the lesson data
@@ -41,6 +42,9 @@ export default function Lesson({ params }: any) {
                 break;
             case 'pdf':
                 lessonComponent = <PdfPage lesson={lesson} />;
+                break;
+            case 'quiz':
+                lessonComponent = <QuizPage lesson={lesson} />;
                 break;
             default:
                 lessonComponent = null;

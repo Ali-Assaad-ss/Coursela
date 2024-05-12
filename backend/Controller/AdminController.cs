@@ -304,6 +304,31 @@ namespace backend.Controller
             if (question == null) return NotFound("Quiz not found");
             return Ok(question);
         }
+        [HttpPut("courses/lessons/quiz/question/{id}")]
+        public async Task<IActionResult> UpdateQuestion(int id, [FromBody] QuestionDto questionDto)
+        {
+            var adminId = User.GetId();
+            var question = await _quizRepository.UpdateQuestion(questionDto ,id, adminId);
+            if (question == null) return NotFound("Quiz not found");
+            return Ok(question);
+        }
+        [HttpDelete("courses/lessons/quiz/question/{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var adminId = User.GetId();
+            var question = await _quizRepository.DeleteQuestion(id, adminId);
+            if (!question) return NotFound("Quiz not found");
+            return Ok(question);
+        }
+        [HttpPut("courses/lessons/quiz/sort")]
+        public async Task<IActionResult> SortQuiz([FromBody] List<int>idArray)
+        {
+            var adminId = User.GetId();
+            var quiz =await _quizRepository.SortQuestions(adminId, idArray);
+            if (quiz != null)
+                return Ok(quiz);
+            return NotFound("Lesson not found");
+        }
 
         [HttpGet("digitaldownload/{id}")]
         public async Task<IActionResult> GetDigitalDownload(int id)

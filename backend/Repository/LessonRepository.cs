@@ -23,6 +23,8 @@ namespace backend.Repository
         public async Task<Lesson?> GetLesson(int lessonId, string adminId)
         {
             var lesson = await _context.Lessons.Include(x=>x.Quiz).ThenInclude(x=>x.Questions).Include(x=>x.ChildSection).Where(x => x.Id == lessonId && x.ParentSection.AdminId == adminId).FirstOrDefaultAsync();
+            if((lesson.Type=="quiz")&&(lesson.Quiz.Questions!=null))
+                lesson.Quiz.Questions=[..lesson.Quiz.Questions.OrderBy(x=>x.Order)];
             return lesson;
         }
         public async Task<Lesson?> AddLesson(string adminId, NewLessonDto lessonDto)
