@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ruAui9xzDzPgjBNitIW1h/ePvbsjl9DGdKaTS4oY3t183MsRo1sx+yN0mwpGYehV2Y/kQmEFu9pqrOkFNoxg2w==",
+  "dgSpecHash": "7XHKy+sMoL+MG6F4/EqFMxB4LGCxu9dxOCTTCBGfUFvJKhEwgUa0kCGha/YQNH72GlJgJ+sfwPJXPOuNJyFxrw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\acer\\Desktop\\Coursela\\backend\\backend.csproj",
+  "projectFilePath": "C:\\Users\\acer\\Desktop\\Coursad\\backend\\backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\acer\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\acer\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

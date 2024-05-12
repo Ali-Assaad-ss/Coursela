@@ -295,6 +295,7 @@ namespace backend.Controller
                 return Ok(lessons);
             return NotFound("Lesson not found");
         }
+
         //add a question to quiz
         [HttpPost("courses/lessons/quiz/{quizId}/question")]
         public async Task<IActionResult> AddQuestion(int quizId, [FromBody] QuestionDto questionDto)

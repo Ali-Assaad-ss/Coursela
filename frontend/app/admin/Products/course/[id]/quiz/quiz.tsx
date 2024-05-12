@@ -18,8 +18,6 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
-
-
 async function order(e: []) {
   const a: number[] = [];
   e.forEach((element: any) => {
@@ -36,10 +34,52 @@ async function order(e: []) {
 
 
 export default function QuizPage({ lesson }) {
+
   const [title, setTitle] = useState(lesson.title);
   const [visibility, setVisibility] = useState(lesson.visibility);
   const [questions, setQuestions] = useState(lesson.quiz.questions);
   const [description, setDescription] = useState(lesson.description);
+  
+
+  async function saveQuiz() {
+    const response = await fetch(`/api/admin/courses/lessons/${lesson.id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: title,
+        visibility: visibility,
+        description: description,
+        content:"",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      alert("saved");
+    } else {
+      alert("error");
+    }
+  };
+
+  const deleteQuestion = async (id: number, method: string) => {
+    if (method == "POST") {
+      const modifiedQuestions = questions.filter((x: any) => x.id != id);
+      setQuestions(modifiedQuestions);
+      return;
+    }
+    const response = await fetch(
+      `/api/admin/courses/lessons/quiz/question/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (response.ok) {
+      alert("deleted");
+      const modifiedQuestions = questions.filter((x: any) => x.id != id);
+      setQuestions(modifiedQuestions);
+    } else alert("error");
+  };
+
   return (
     <>
       <h1 className="text-2xl font-bold m-5 mt-7 ml-10">Quiz</h1>
@@ -62,16 +102,28 @@ export default function QuizPage({ lesson }) {
             value={description}
           />
         </div>
-        <Reorder.Group axis="y" values={questions} onReorder={(e)=>{
-          order(e);
-          setQuestions(e);
-          }}>
+        <Reorder.Group
+          axis="y"
+          values={questions}
+          onReorder={(e) => {
+            order(e);
+            setQuestions(e);
+          }}
+        >
           {questions.map((item: any) => (
             <Reorder.Item key={item.id} value={item}>
               {item.questionType == "mcq" ? (
-                <Mcq quizId={lesson.quizId} question={item} />
+                <Mcq
+                  quizId={lesson.quizId}
+                  question={item}
+                  del={deleteQuestion}
+                />
               ) : (
-                <Subj quizId={lesson.quizId} question={item} />
+                <Subj
+                  quizId={lesson.quizId}
+                  question={item}
+                  del={deleteQuestion}
+                />
               )}
             </Reorder.Item>
           ))}
@@ -85,23 +137,31 @@ export default function QuizPage({ lesson }) {
           <DropdownMenuContent>
             <DropdownMenuLabel>Question Type</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={
-              ()=>{
-                const modifiedQuestions=[...questions,{questionType:"mcq",method:"POST"}]
-                console.log(modifiedQuestions)
-                setQuestions(modifiedQuestions)
-              }
-            }>MCQ</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const modifiedQuestions = [
+                  ...questions,
+                  { questionType: "mcq", method: "POST", id: Math.random() },
+                ];
+                console.log(modifiedQuestions);
+                setQuestions(modifiedQuestions);
+              }}
+            >
+              MCQ
+            </DropdownMenuItem>
 
-            <DropdownMenuItem 
-            onClick={
-              ()=>{
-                const modifiedQuestions=[...questions,{questionType:"subjective",method:"POST"}]
-                console.log(modifiedQuestions)
-                setQuestions(modifiedQuestions)
-              }
-            }
-            >Subjective</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const modifiedQuestions = [
+                  ...questions,
+                  { questionType: "subjective", method: "POST",id: Math.random() },
+                ];
+                console.log(modifiedQuestions);
+                setQuestions(modifiedQuestions);
+              }}
+            >
+              Subjective
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex items-start">
@@ -125,7 +185,7 @@ export default function QuizPage({ lesson }) {
             </div>
           </RadioGroup>
         </div>
-        <Button className="ml-auto px-10">Save</Button>
+        <Button className="ml-auto px-10" onClick={saveQuiz}>Save</Button>
       </div>
     </>
   );

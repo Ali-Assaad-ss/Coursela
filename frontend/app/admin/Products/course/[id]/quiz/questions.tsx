@@ -8,19 +8,20 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { CiTrash } from "react-icons/ci";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineDelete } from "react-icons/md";
-export function Mcq({ quizId, question }: any) {
-  const[url,setUrl]=useState("");
+
+export function Mcq({ quizId, question, del }: any) {
+  const [url, setUrl] = useState("");
   const [method, setMethod] = useState(question.method);
 
   useEffect(() => {
     if (!method) {
       setMethod("PUT");
-      setUrl (`/api/admin/courses/lessons/quiz/question/${question.id}`);
-      console.log(url,"put");
+      setUrl(`/api/admin/courses/lessons/quiz/question/${question.id}`);
+      console.log(url, "put");
     } else {
       setMethod("POST");
-      setUrl (`/api/admin/courses/lessons/quiz/${quizId}/question`)
-      console.log(url,"post");
+      setUrl(`/api/admin/courses/lessons/quiz/${quizId}/question`);
+      console.log(url, "post");
     }
   }, []);
 
@@ -40,7 +41,7 @@ export function Mcq({ quizId, question }: any) {
       alert("Fill all options");
       return;
     }
-    if ((!correctResponse)||!(choices.includes(correctResponse))) {
+    if (!correctResponse || !choices.includes(correctResponse)) {
       alert("select the correct option");
       return;
     }
@@ -72,22 +73,24 @@ export function Mcq({ quizId, question }: any) {
     });
     if (response.ok) {
       setMethod("PUT");
+      const data = await response.json();
+      question.id = data.id;
+      setUrl(`/api/admin/courses/lessons/quiz/question/${question.id}`);
       alert("saved");
     } else alert("error");
   };
 
-  const deleteQuestion=async()=>{+
-    
-    if (response.ok) {
-      alert("deleted");
-    } else alert("error");
-  }
-
   return (
     <form onSubmit={(e) => addMcq(e)}>
       <div className="MCQ border p-7 rounded-xl mb-5">
-        <div className="flex justify-between"><CiTrash className="size-6" onClick={deleteQuestion} /> <ScoreInput maxScore={maxScore} setMaxScore={setMaxScore} /></div>
-        
+        <div className="flex justify-between">
+          <CiTrash
+            className="size-6"
+            onClick={() => del(question.id, method)}
+          />
+          <ScoreInput maxScore={maxScore} setMaxScore={setMaxScore} />
+        </div>
+
         <div className=" flex">
           <div className="flex-1">
             <p className="text-xl pb-3">MCQ</p>
@@ -172,15 +175,15 @@ function ScoreInput({ maxScore, setMaxScore }: any) {
   );
 }
 
-export function Subj({ quizId, question }: any) {
+export function Subj({ quizId, question, del }: any) {
   const [content, setContent] = useState(question.content);
   const [maxScore, setMaxScore] = useState(question.maxScore);
   const [method, setMethod] = useState(question.method);
-  const[url,setUrl]=useState("");
+  const [url, setUrl] = useState("");
   useEffect(() => {
     if (!method) {
       setMethod("PUT");
-      setUrl( `/api/admin/courses/lessons/quiz/question/${question.id}`);
+      setUrl(`/api/admin/courses/lessons/quiz/question/${question.id}`);
     } else {
       setMethod("POST");
       setUrl(`/api/admin/courses/lessons/quiz/${quizId}/question`);
@@ -189,21 +192,18 @@ export function Subj({ quizId, question }: any) {
 
   const addSub = async (e: FormEvent) => {
     e.preventDefault();
-    const response = await fetch(
-      url,
-      {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ maxScore, content, QuestionType: "subjective" }),
-      }
-    );
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ maxScore, content, QuestionType: "subjective" }),
+    });
     if (response.ok) {
       setMethod("PUT");
-      let data=await response.json();
-      question.id=data.id;
-      setUrl( `/api/admin/courses/lessons/quiz/question/${question.id}`);
+      let data = await response.json();
+      question.id = data.id;
+      setUrl(`/api/admin/courses/lessons/quiz/question/${question.id}`);
       alert("saved");
     } else alert("error");
   };
@@ -211,7 +211,13 @@ export function Subj({ quizId, question }: any) {
   return (
     <form onSubmit={addSub}>
       <div className="border p-7 rounded-xl mb-5">
-        <ScoreInput maxScore={maxScore} setMaxScore={setMaxScore} />
+      <div className="flex justify-between">
+          <CiTrash
+            className="size-6"
+            onClick={() => del(question.id, method)}
+          />
+          <ScoreInput maxScore={maxScore} setMaxScore={setMaxScore} />
+        </div>
         <p className="text-xl mb-3">Subjective</p>
         <Textarea
           name="content"
