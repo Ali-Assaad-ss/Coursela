@@ -10,9 +10,15 @@ namespace backend.Model
         public int Id { get; set; }
         public string Title { get; set; }
         public string Type { get; set; }
-        public string Content { get; set; }
+        public string Content { get; set; }=string.Empty;
+        public string? Description { get; set; }=string.Empty;
         public string Visibility { get; set; }
-        public Section Section { get; set; }
-        public int SectionId { get; set; }
+        public int ParentSectionId { get; set; }
+        public Section? ParentSection { get; set; }
+        public int? ChildSectionId { get; set; }=null;
+        public Section? ChildSection { get; set; }
+        public int Order { get; set; }
+        public int? QuizId { get; set; }
+        public Quiz? Quiz { get; set; }
     }
 }

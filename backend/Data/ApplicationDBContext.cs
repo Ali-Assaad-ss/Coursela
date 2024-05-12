@@ -99,20 +99,20 @@ namespace backend.Data
             .HasOne(o => o.Product)
             .WithMany(p => p.Offerings)
             .HasForeignKey(o => o.ProductId);
-            
+
 
             builder.Entity<Offer>()
             .HasOne(o => o.Admin)
             .WithMany(a => a.Offerings)
             .HasForeignKey(o => o.AdminId);
-            
+
 
             //Community product relationship one to one
             builder.Entity<Community>()
             .HasOne(c => c.Product)
             .WithOne(p => p.Community)
             .HasForeignKey<Community>(c => c.ProductId);
-            
+
 
             //community Post relationship one to many
             builder.Entity<Post>()
@@ -173,6 +173,9 @@ namespace backend.Data
             //user purchase product relationship many to many
             //1. user purchase relationship one to many
             builder.Entity<Purchase>()
+            .HasKey(o => new { o.ProductId, o.UserId });
+
+            builder.Entity<Purchase>()
             .HasOne(p => p.User)
             .WithMany(u => u.Purchases)
             .HasForeignKey(p => p.UserId)
@@ -204,49 +207,25 @@ namespace backend.Data
             .HasOne(b => b.User)
             .WithMany(u => u.Bookings)
             .HasForeignKey(b => b.UserId);
-            
+
             //2. coaching booking relationship one to many
             builder.Entity<Booking>()
             .HasOne(b => b.Coaching)
             .WithMany(c => c.Bookings)
             .HasForeignKey(b => b.CoachingId);
-            
-
-            //Course section relationship one to many
-            builder.Entity<Section>()
-            .HasOne(s => s.Course)
-            .WithMany(c => c.Sections)
-            .HasForeignKey(s => s.CourseId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
-            //parentsection include childsection relationship
-            builder.Entity<Section>()
-            .HasMany(s => s.ChildSections)
-            .WithOne(s => s.ParentSection)
-            .HasForeignKey(s => s.ParentSectionId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
 
             //lesson section relationship
             builder.Entity<Lesson>().
-            HasOne(l => l.Section).
+            HasOne(l => l.ParentSection).
             WithMany(s => s.Lessons).
-            HasForeignKey(l => l.SectionId);
-
-            //lesson quiz relationship using discriminator
-            builder.Entity<Lesson>()
-            .HasDiscriminator<string>("LessonType")
-            .HasValue<Lesson>("Lesson")
-            .HasValue<Quiz>("Quiz");
-
+            HasForeignKey(l => l.ParentSectionId);
+            
 
             //quiz question relationship one to many
-            builder.Entity<Question>()
-            .HasOne(q => q.Quiz)
-            .WithMany(q => q.Questions)
-            .HasForeignKey(q => q.QuizId);
+            builder.Entity<Quiz>()
+            .HasMany(q => q.Questions).
+            WithOne(q => q.Quiz).
+            HasForeignKey(q => q.QuizId).OnDelete(DeleteBehavior.Cascade);
 
             //response question relationship
             builder.Entity<Response>()

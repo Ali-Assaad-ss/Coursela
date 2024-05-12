@@ -7,9 +7,9 @@ namespace backend.Model
 {
     public class Coaching:Product
     {
-        public List<Booking> Bookings { get; set; }
-        public List<DateTime> AvailableDates { get; set; }
-        public List<DateTime> ReservedDates { get; set; }
+        public List<Booking>? Bookings { get; set; }
+        public List<DateTime>? AvailableDates { get; set; }
+        public List<DateTime>? ReservedDates { get; set; }
         
     }
 }

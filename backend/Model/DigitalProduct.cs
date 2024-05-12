@@ -7,8 +7,7 @@ namespace backend.Model
 {
     public class DigitalProduct:Product
     {
-    public string Type { get; set; }
-    public string Url { get; set; }
+    public string FileName { get; set; }
         
     }
 }

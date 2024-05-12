@@ -1,0 +1,334 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CiText } from "react-icons/ci";
+import { LuFileQuestion } from "react-icons/lu";
+import { MdOndemandVideo } from "react-icons/md";
+import { TbGridDots } from "react-icons/tb";
+import { IoSettingsOutline } from "react-icons/io5";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { Reorder, useDragControls } from "framer-motion";
+import { BsFolderSymlink } from "react-icons/bs";
+import { FaFileDownload } from "react-icons/fa";
+import { FaRegFilePdf } from "react-icons/fa6";
+import { IoImageOutline } from "react-icons/io5";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { TiEdit } from "react-icons/ti";
+import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+type myContext = {
+  courseId: number;
+  lessonList: Function;
+  router: AppRouterInstance;
+};
+
+export const Context = createContext<myContext | undefined>(undefined);
+
+export default function Page({ params }: any) {
+  const [lessons, setLessons] = useState([]);
+  const router = useRouter();
+  const [sectionId, setSectionId] = useState(0);
+  const [name, setName] = useState("");
+  let courseId = params.id;
+
+  async function lessonList() {
+    const response = await fetch(`/api/admin/courses/${params.id}`);
+    const data = await response.json();
+    setName(data.name.charAt(0).toUpperCase() + data.name.slice(1));
+    setSectionId(data.section.id);
+    setLessons(data.section.lessons);
+  }
+  useEffect(() => {
+    lessonList();
+  }, []);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold my-5 mx-10">{name}</h1>
+        <Button variant="outline" className="text-2xl mr-5">
+          <IoSettingsOutline
+            onClick={() => router.push(`${params.id}/settings`)}
+          />
+        </Button>
+      </div>
+      <Context.Provider value={{ courseId, lessonList, router }}>
+        <Section
+          sectionId={sectionId}
+          Sectionlessons={lessons}
+          onReorderFunction={setLessons}
+        />
+      </Context.Provider>
+    </div>
+  );
+}
+
+async function order(e: []) {
+  const a: number[] = [];
+  e.forEach((element: any) => {
+    a.push(element.id);
+  });
+  const response = await fetch("/api/admin/courses/lessons/sort", {
+    method: "PUT",
+    body: JSON.stringify(a),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function Section({ Sectionlessons, onReorderFunction, sectionId }: any) {
+  return (
+    <Reorder.Group
+      className="border mx-4 rounded-xl flex flex-col w-full  p-5  text-gray-800  gap-7"
+      axis="y"
+      values={Sectionlessons}
+      onReorder={(e) => {
+        order(e);
+        onReorderFunction(e);
+      }}
+    >
+      {Sectionlessons.map((lesson: any) => (
+        <LessonItem lesson={lesson} key={lesson.id} />
+      ))}
+      <div className="flex justify-left gap-4">
+        <LessonDialog ParentSectionId={sectionId} />
+        <SectionDialog ParentSectionId={sectionId} />
+      </div>
+    </Reorder.Group>
+  );
+}
+
+function LessonItem({ lesson }: any) {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item
+      className="flex items-center gap-3 border rounded-xl p-5 select-none"
+      id={lesson.id}
+      value={lesson}
+      dragListener={false}
+      dragControls={controls}
+    >
+      <div
+        className="cursor-grab active:cursor-grabbing"
+        onPointerDown={(e) => controls.start(e)}
+      >
+        <TbGridDots className="text-3xl" />
+      </div>
+      <Lesson lesson={lesson} />
+    </Reorder.Item>
+  );
+}
+
+export function Lesson({ lesson }: any) {
+  let Icon;
+  switch (lesson.type) {
+    case "section":
+      Icon = BsFolderSymlink;
+      break;
+    case "text":
+      Icon = CiText;
+      break;
+    case "video":
+      Icon = MdOndemandVideo;
+      break;
+    case "quiz":
+      Icon = LuFileQuestion;
+      break;
+    case "file":
+      Icon = FaFileDownload;
+      break;
+    case "pdf":
+      Icon = FaRegFilePdf;
+      break;
+    case "image":
+      Icon = IoImageOutline;
+      break;
+    default:
+      Icon = BsFolderSymlink; // Default to section icon if type is not specified
+  }
+
+  const context = useContext(Context);
+  async function deleteLesson() {
+      fetch(`/api/admin/courses/lessons/${lesson.id}`, {
+        method: "DELETE",
+      }).then((res) => {
+        if (res.ok) {
+          context?.lessonList();
+        } else {
+          alert("Error");
+        }
+      });
+  }
+
+  function openLesson() {
+    context?.router.push(`${context.courseId}/${lesson.id}`);
+  }
+
+  return (
+    <div className="flex items-center w-full">
+      <Icon className="bg-slate-100 text-black text-5xl p-2 rounded-md" />
+      <h2 className="text-2xl font-bold ml-5">{lesson.title}</h2>
+      <div className="ml-auto text-3xl flex gap-2 items-center">
+        <TiEdit
+          onClick={openLesson}
+          className="hover:text-blue-900 hover:cursor-pointer"
+        />
+        <MdOutlineDeleteForever
+          className="hover:text-red-950 hover:cursor-pointer"
+          onClick={deleteLesson}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function LessonDialog({ ParentSectionId }: any) {
+
+  const context = useContext(Context);
+
+  const createLesson = async (e: any, type: string) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const title = formData.get("title")?.toString()?.trim();
+    const validTypes = [
+      "section",
+      "text",
+      "video",
+      "quiz",
+      "image",
+      "pdf",
+      "file",
+    ];
+
+    if (!validTypes.includes(type) || !title)
+      return alert("Choose a title and type");
+
+    const ParentSectionId = formData.get("SectionId");
+
+    const res = await fetch(`/api/admin/courses/lessons`, {
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      body: JSON.stringify({ title, ParentSectionId, type }),
+    });
+    context?.lessonList();
+    if (!res.ok) alert("error");
+  };
+
+  const [type, setType] = useState("");
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add Lesson</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[525px]">
+        <DialogHeader>
+          <DialogTitle>Create Lesson</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <form onSubmit={(e) => createLesson(e, type)}>
+          <div>
+            <p className="mb-4">Enter Lesson Name</p>
+            <Input placeholder="Title..." name="title" />
+            <Input
+              name="SectionId"
+              className="hidden"
+              value={ParentSectionId}
+            />
+          </div>
+          <div>
+            <p className="my-4">Choose Lesson Type</p>
+            <Select onValueChange={setType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Lesson Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="quiz">Quiz</SelectItem>
+                <SelectItem value="image">Image</SelectItem>
+                <SelectItem value="video">Video</SelectItem>
+                <SelectItem value="pdf">PDF</SelectItem>
+                <SelectItem value="file">File</SelectItem>
+              </SelectContent>
+            </Select>
+            <DialogClose className="ml-auto flex mt-5">
+              <Button type="submit">Submit</Button>
+            </DialogClose>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function SectionDialog({ ParentSectionId }: any) {
+  
+  const context = useContext(Context);
+
+  const createLesson = async (e: any, type: string) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const title = formData.get("title")?.toString()?.trim();
+    const validTypes = [
+      "section",
+      "text",
+      "video",
+      "quiz",
+      "image",
+      "pdf",
+      "file",
+    ];
+
+    if (!validTypes.includes(type) || !title)
+      return alert("Choose a title and type");
+
+    const ParentSectionId = formData.get("SectionId");
+
+    const res = await fetch(`/api/admin/courses/lessons`, {
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      body: JSON.stringify({ title, ParentSectionId, type }),
+    });
+    context?.lessonList();
+    if (!res.ok) alert("error");
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add Section</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[525px]">
+        <DialogHeader>
+          <DialogTitle>Create Section</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <form onSubmit={(e) => createLesson(e, "section")}>
+          <p className="mb-4">Enter Section Name</p>
+          <Input name="SectionId" className="hidden" value={ParentSectionId} />
+          <Input placeholder="Name..." id="name" name="title" />
+          <DialogClose className="ml-auto mt-5 flex">
+            <Button type="submit">Add</Button>
+          </DialogClose>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
