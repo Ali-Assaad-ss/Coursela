@@ -28,6 +28,12 @@ function sortProducts(products: Product[], userProducts: number[]) {
 }
 
 export default function ProductsTab() {
+  const products: Product[] = [
+    { id: 1, name: "Product 1", price: 100, members: 10, type: "Type 1" },
+    { id: 2, name: "Product 2", price: 200, members: 20, type: "Type 2" },
+    { id: 3, name: "Product 3", price: 300, members: 30, type: "Type 3" },
+    { id: 4, name: "Product 4", price: 400, members: 40, type: "Type 4" },
+  ];
   const [userProducts, setUserProducts] = useState([1, 3]);
   const sortedProducts = sortProducts(products, userProducts);
   return <ProductTable sortedProducts={sortedProducts} userProducts={userProducts} setUserProducts={setUserProducts}/>;

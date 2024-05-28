@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import{useCallback, useEffect, useState} from "react";
+import{useEffect, useState} from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -106,6 +106,9 @@ const initialCourse: Course = {
         <div className="flex">
           <p className="text-xl">Description</p>
           <Textarea value={course.description}
+          onChange={(e)=>{
+            const modifiedCourse = { ...course, description: e.target.value };
+            setCourse(modifiedCourse)}}
             className="w-[80%] ml-auto h-56"
             placeholder="Enter the Description here"
             name="description"

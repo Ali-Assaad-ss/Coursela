@@ -18,8 +18,7 @@ export default function page() {
     description:
       "You can utilize this Excel spreadsheet to track the number of sets and repetitions for each exercise. Simply input your data into the designated columns, and the spreadsheet will calculate totals and averages automatically. This tool can help you monitor your progress and stay organized with your workout routine.",
     image:
-      "https://i0.wp.com/humankinetics.me/wp-content/uploads/2019/01/Power-Yoga-book.jpg?resize=960%2C640&ssl=1",
-    url: "https://www.beltonparks.org/DocumentCenter/View/2609/GROUP-FITNESS-Sept-November",
+      "https://blog-images-1.pharmeasy.in/blog/production/wp-content/uploads/2021/02/01200417/shutterstock_324427688-1-1024x683.jpg",
   };
   return (
     <div className="px-10 my-20">

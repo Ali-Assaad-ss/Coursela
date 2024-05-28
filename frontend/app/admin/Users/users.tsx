@@ -34,7 +34,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Alert } from "./alert";
 import { ArrowUpDown } from "lucide-react";
 
 const data: User[] = [

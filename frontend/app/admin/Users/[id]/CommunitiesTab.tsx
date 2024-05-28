@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { communities } from "./Communities";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -26,6 +25,28 @@ function sortCommunities(communities: Community[], userCommunities: number[]) {
 }
 
 export default function CommunitiesTab() {
+
+  const communities = [
+    {
+        id: 1,
+        name: "Community 1",
+    },
+    {
+        id:2,
+        name: "Community 2",
+    },
+    {
+        id:3,
+        name: "Community 3",
+    },
+    {
+        id:4,
+        name: "Community 4",
+    },
+    {
+        id:5,
+        name: "Community 5",
+    }]
   const [userCommunities, setUserCommunities] = useState([1, 3]);
   const sortedCommunities = sortCommunities(communities, userCommunities);
   return <ProductTable sortedCommunities={sortedCommunities} userCommunities={userCommunities} setUserCommunities={setUserCommunities}/>;

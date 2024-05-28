@@ -59,8 +59,7 @@ export default function page() {
     description:
       "Embark on a transformative journey of self-discovery and holistic wellness with our Harmony Flow Yoga Course. This comprehensive program is designed to nourish your mind, body, and spirit through the ancient practice of yoga. Guided by experienced instructors, you'll explore a variety of yoga styles, including Vinyasa, Hatha, and Restorative, allowing you to find the perfect balance for your unique needs.",
     image:
-      "https://i0.wp.com/humankinetics.me/wp-content/uploads/2019/01/Power-Yoga-book.jpg?resize=960%2C640&ssl=1",
-    url: "https://www.beltonparks.org/DocumentCenter/View/2609/GROUP-FITNESS-Sept-November",
+      "https://byootee.biz/wp-content/uploads/2022/08/couples-yoga.jpg",
     lessons:lessons,
   };
   return (

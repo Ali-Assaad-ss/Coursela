@@ -5,16 +5,16 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa";
 export default function page() {
-
+  
   let posts = [
     {
       user:{
-        name: "Jay Cutler",
-        image: "https://thispersondoesnotexist.com/",
+        name: "John Doe",
+        image: "https://thispersondoesnotexist.com/"
       },
       description: "description of the post ...",
-      type: "image",
-      link: "https://img.freepik.com/free-photo/still-life-graphic-design-office_23-2151345410.jpg?w=1380"
+      type: "video",
+      link: "https://videocdn.cdnpk.net/joy/content/video/free/video0454/large_preview/_import_6064833e09e139.05655091.mp4?filename=1103044_1080p_pandemic_discovery_1920x1080.mp4"
     },
     {
       user:{
@@ -25,15 +25,6 @@ export default function page() {
       type: "image",
       link: "https://img.freepik.com/free-photo/wireless-earbuds-with-neon-cyberpunk-style-lighting_23-2151074279.jpg?w=360"
     },
-    {
-      user:{
-        name: "Jay Cutler",
-        image: "https://thispersondoesnotexist.com/"
-      },
-      description: "description of the post ...",
-      type: "video",
-      link: "https://videocdn.cdnpk.net/joy/content/video/free/video0454/large_preview/_import_6064833e09e139.05655091.mp4?filename=1103044_1080p_pandemic_discovery_1920x1080.mp4"
-    }
   ];
 
 

@@ -7,6 +7,7 @@ import ImagePage from '../image/image';
 import FilePage from '../file/file';
 import PdfPage from '../pdf/pdf';
 import QuizPage from '../quiz/quiz';
+import Section from '../section/section';
 
 export default function Lesson({ params }: any) {
     // Use state to store the lesson data
@@ -45,6 +46,9 @@ export default function Lesson({ params }: any) {
                 break;
             case 'quiz':
                 lessonComponent = <QuizPage lesson={lesson} />;
+                break;
+            case 'section':
+                lessonComponent = <Section lesson={lesson} />;
                 break;
             default:
                 lessonComponent = null;

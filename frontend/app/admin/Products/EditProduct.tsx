@@ -38,7 +38,6 @@ export function Edit({ row }: any) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="flex">
           <Button variant="ghost" className="h-8 w-8 p-0 mx-auto">
-            <span className="sr-only">Open menu</span>
             <DotsHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -50,7 +49,7 @@ export function Edit({ row }: any) {
       </DropdownMenu>
       <Drawer>
         <DrawerTrigger>
-          <FaRegTrashCan />
+          <FaRegTrashCan className="size-5" />
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>

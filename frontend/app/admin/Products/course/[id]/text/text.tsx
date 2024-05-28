@@ -39,7 +39,7 @@ export default function TextPage({ lesson }) {
         </div>
         <div className="flex">
           <p className="text-xl">Content</p>
-          <div className="w-[80%] ml-auto">
+          <div className="w-[80%] ml-auto uldisk">
             <EditorProvider
               slotBefore={<MenuBar />}
               extensions={extensions}

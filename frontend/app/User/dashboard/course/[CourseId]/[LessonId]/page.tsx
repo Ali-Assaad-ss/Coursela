@@ -7,5 +7,5 @@ import { PdfLesson } from "./pdf";
 import {FileLesson} from "./DigitalDownload";
 
 export default function page() {
-  return <QuizLesson />;
+  return <FileLesson />;
 }

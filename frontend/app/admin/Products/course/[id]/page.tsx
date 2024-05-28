@@ -17,22 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CiText } from "react-icons/ci";
-import { LuFileQuestion } from "react-icons/lu";
-import { MdOndemandVideo } from "react-icons/md";
 import { TbGridDots } from "react-icons/tb";
-import { IoSettingsOutline } from "react-icons/io5";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Reorder, useDragControls } from "framer-motion";
-import { BsFolderSymlink } from "react-icons/bs";
-import { FaFileDownload } from "react-icons/fa";
-import { FaRegFilePdf } from "react-icons/fa6";
-import { IoImageOutline } from "react-icons/io5";
-import { MdOutlineDeleteForever } from "react-icons/md";
-import { TiEdit } from "react-icons/ti";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
+import quiz from './icons/question.gif';
+import pdf from './icons/pdf-file.gif';
+import download from './icons/download.gif';
+import folder from './icons/folder.gif';
+import video from './icons/video.gif';
+import img from './icons/image.gif';
+import text from './icons/txt-file.gif';
+
+import "./styles.css"
 type myContext = {
   courseId: number;
   lessonList: Function;
@@ -60,14 +59,11 @@ export default function Page({ params }: any) {
   }, []);
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold my-5 mx-10">{name}</h1>
-        <Button variant="outline" className="text-2xl mr-5">
-          <IoSettingsOutline
-            onClick={() => router.push(`${params.id}/settings`)}
-          />
-        </Button>
+        <h1 className="text-3xl font-semibold my-5 ml-20">{name}</h1>
+
+          <div onClick={() => router.push(`${params.id}/settings`)} className="settingsButton sideButton mr-10" > </div>
       </div>
       <Context.Provider value={{ courseId, lessonList, router }}>
         <Section
@@ -97,7 +93,7 @@ async function order(e: []) {
 export function Section({ Sectionlessons, onReorderFunction, sectionId }: any) {
   return (
     <Reorder.Group
-      className="border mx-4 rounded-xl flex flex-col w-full  p-5  text-gray-800  gap-7"
+      className="border mx-4 rounded-xl flex flex-col p-5  text-gray-800  gap-7"
       axis="y"
       values={Sectionlessons}
       onReorder={(e) => {
@@ -141,28 +137,28 @@ export function Lesson({ lesson }: any) {
   let Icon;
   switch (lesson.type) {
     case "section":
-      Icon = BsFolderSymlink;
+      Icon = folder;
       break;
     case "text":
-      Icon = CiText;
+      Icon = text;
       break;
     case "video":
-      Icon = MdOndemandVideo;
+      Icon = video;
       break;
     case "quiz":
-      Icon = LuFileQuestion;
+      Icon = quiz;
       break;
     case "file":
-      Icon = FaFileDownload;
+      Icon = download;
       break;
     case "pdf":
-      Icon = FaRegFilePdf;
+      Icon = pdf;
       break;
     case "image":
-      Icon = IoImageOutline;
+      Icon = img;
       break;
     default:
-      Icon = BsFolderSymlink; // Default to section icon if type is not specified
+      Icon = folder; // Default to section icon if type is not specified
   }
 
   const context = useContext(Context);
@@ -181,20 +177,13 @@ export function Lesson({ lesson }: any) {
   function openLesson() {
     context?.router.push(`${context.courseId}/${lesson.id}`);
   }
-
   return (
     <div className="flex items-center w-full">
-      <Icon className="bg-slate-100 text-black text-5xl p-2 rounded-md" />
-      <h2 className="text-2xl font-bold ml-5">{lesson.title}</h2>
+      <img className="w-12" src={Icon.src} alt="" />
+      <h2 className="text-2xl font-semibold ml-5">{lesson.title}</h2>
       <div className="ml-auto text-3xl flex gap-2 items-center">
-        <TiEdit
-          onClick={openLesson}
-          className="hover:text-blue-900 hover:cursor-pointer"
-        />
-        <MdOutlineDeleteForever
-          className="hover:text-red-950 hover:cursor-pointer"
-          onClick={deleteLesson}
-        />
+        <div onClick={openLesson} className="editButton sideButton"/>
+        <div onClick={deleteLesson} className="deleteButton sideButton"/>
       </div>
     </div>
   );

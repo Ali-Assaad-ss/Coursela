@@ -96,3 +96,7 @@ p {
     outline: none;
   }
 }
+.uldisk ul{
+  list-style-type: disc;
+
+}

@@ -1,6 +1,5 @@
 "use client";
 import "./style.css";
-import styled from 'styled-components';
 import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
@@ -37,12 +36,8 @@ export const MenuBar = () => {
     return null;
   }
 
-  const StyledUl = styled.ul`
-  list-style-type: disc;
-`;
 
   return (
-    <StyledUl>
       <div className="flex gap-2 mb-2 flex-wrap">
         <div
           className={`hover:bg-slate-300 w-7 h-7 rounded flex justify-center items-center cursor-pointer bg-slate-200 ${
@@ -201,7 +196,6 @@ export const MenuBar = () => {
           <LuSpace />
         </div>
       </div>
-      </StyledUl>
   );
 };
 

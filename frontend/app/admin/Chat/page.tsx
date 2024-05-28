@@ -36,9 +36,8 @@ export default function page() {
           <hr className="mb-2" />
 
           <Message text="hello there" from time="12:32"></Message>
-          <Message text="hello there" time="12:32"></Message>
-          <Message text="hello there" time="12:32"></Message>
-          <Message text="hello there" time="12:32"></Message>
+          <Message text="Hi how can i help you" time="12:32"></Message>
+          <Message text="There is this thing i don't understand" from time="12:32"></Message>
 
           <div className="flex items-center mt-auto ">
             <Input placeholder="Enter your message" className="m-2" />
