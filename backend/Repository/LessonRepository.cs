@@ -7,13 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Repository
 {
-    public class LessonRepository
+    public class LessonRepository(ApplicationDBContext context)
     {
-        protected readonly ApplicationDBContext _context;
-        public LessonRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
+        protected readonly ApplicationDBContext _context = context;
+
         public async Task<List<Lesson>?> GetLessons(string adminId, int ParentsectionId)
         {
             var section = await _context.Sections.Where(x => x.Id == ParentsectionId).FirstOrDefaultAsync();

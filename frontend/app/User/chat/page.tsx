@@ -1,6 +1,6 @@
 "use client";
-import UserChat from "./UserChat";
-import Message from "./Message";
+import UserChat from "../../admin/chat/UserChat";
+import Message from "../../admin/chat//Message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { VscSend } from "react-icons/vsc";

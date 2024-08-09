@@ -54,6 +54,13 @@ const data: User[] = [
   },
 ];
 
+
+//fetch data from the server
+const fetchUsers = async () => {
+  const response = await fetch("/api/admin/users");
+  const data = await response.json();
+  return data;
+}
 export type User = {
   Id: string;
   Name: string;

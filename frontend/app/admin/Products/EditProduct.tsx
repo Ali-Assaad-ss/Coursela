@@ -29,8 +29,10 @@ export function Edit({ row }: any) {
   }
   async function deleteProduct(){
     const response=await fetch(`/api/admin/products/${id}`,{method:"DELETE"})
-    if(response.ok)
-    alert("deleted successfully")
+    if(response.ok){
+
+      
+    alert("deleted successfully")}
   }
 
   return (

@@ -17,17 +17,11 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/course")]
-    public class CourseController : ControllerBase
+    public class CourseController(UserManager<ApplicationUser> userManager, ICourseRepository courseRepositry, IOfferRepository offerRepository) : ControllerBase
     {
-        private readonly ICourseRepository _courseRepositry;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IOfferRepository _offerRepository;
-        public CourseController(UserManager<ApplicationUser> userManager ,ICourseRepository courseRepositry, IOfferRepository offerRepository)
-        {
-            _courseRepositry = courseRepositry;
-            _userManager = userManager;
-            _offerRepository = offerRepository;
-        }
+        private readonly ICourseRepository _courseRepositry = courseRepositry;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly IOfferRepository _offerRepository = offerRepository;
 
         [HttpPost]
         [Authorize(Roles = "Admin")]

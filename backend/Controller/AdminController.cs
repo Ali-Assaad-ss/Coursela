@@ -8,45 +8,34 @@ using backend.Extensions;
 using backend.Interface;
 using backend.Model;
 using backend.Repository;
+using Backend.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace backend.Controller
 {
     [ApiController]
     [Route("api/admin")]
     [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    public class AdminController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+    ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository,
+    IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository,
+     CoachingRepository coachingRepository, QuizRepository quizRepository, PurchasesRepository purchasesRepository) : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signinManager;
-        private readonly ICourseRepository _courseRepository;
-        private readonly IProductRepository _productRepositry;
-        private readonly SectionRepository _sectionRepository;
-        private readonly IOfferRepository _offerRepository;
-        private readonly LessonRepository _lessonRepository;
-        private readonly DigitalProductRepository _digitalProductRepository;
-        private readonly CoachingRepository _coachingRepository;
-        private readonly QuizRepository _quizRepository;
-        public AdminController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-        ICourseRepository courseRepository, IProductRepository productRepository, SectionRepository sectionRepository,
-        IOfferRepository offerRepository, LessonRepository lessonRepository, DigitalProductRepository digitalProductRepository,
-         CoachingRepository coachingRepository, QuizRepository quizRepository)
-        {
-            _signinManager = signInManager;
-            _userManager = userManager;
-            _courseRepository = courseRepository;
-            _productRepositry = productRepository;
-            _sectionRepository = sectionRepository;
-            _offerRepository = offerRepository;
-            _lessonRepository = lessonRepository;
-            _digitalProductRepository = digitalProductRepository;
-            _coachingRepository = coachingRepository;
-            _quizRepository = quizRepository;
-
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly SignInManager<ApplicationUser> _signinManager = signInManager;
+        private readonly ICourseRepository _courseRepository = courseRepository;
+        private readonly IProductRepository _productRepositry = productRepository;
+        private readonly SectionRepository _sectionRepository = sectionRepository;
+        private readonly IOfferRepository _offerRepository = offerRepository;
+        private readonly PurchasesRepository _purchasesRepository;
+        private readonly LessonRepository _lessonRepository = lessonRepository;
+        private readonly DigitalProductRepository _digitalProductRepository = digitalProductRepository;
+        private readonly CoachingRepository _coachingRepository = coachingRepository;
+        private readonly QuizRepository _quizRepository = quizRepository;
 
         [HttpPost("login")]
         [AllowAnonymous]
@@ -342,6 +331,23 @@ namespace backend.Controller
             if (coaching == null) return NotFound("Coaching not found");
             return Ok(coaching);
         }
+        //get all users registered with the adim
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var adminId = User.GetId();
+            List<User> users = [];
+            var products = await _productRepositry.GetProducts(adminId);
+            foreach (var product in products)
+            {
+                var usersByProduct = await _purchasesRepository.GetUsersByProductId(product.Id);
+                users.AddRange(usersByProduct);
+            }
+            //convert using mapper
+            var usersDto = users.Select(x => x.ToAdminPageUsersDto()).ToList();
+            return Ok(usersDto);
+        }
+        
 
     }
 }

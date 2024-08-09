@@ -9,9 +9,9 @@ namespace backend.Model
     {
         public int Id { get; set; }
         public string Type { get; set; }
-        public string ContentUrl { get; set; }
+        public string Content { get; set; }
         public DateTime MessageDate { get; set; }
-        public int SenderId { get; set; }
+        public string SenderId { get; set; }
         public int ChatRoomId { get; set; }
         public ChatRoom ChatRoom { get; set; }
     }

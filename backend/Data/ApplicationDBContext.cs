@@ -77,13 +77,6 @@ namespace backend.Data
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
-            //admin chatroom relationship one to many
-            builder.Entity<ChatRoom>()
-            .HasOne(c => c.Admin)
-            .WithMany(a => a.ChatRooms)
-            .HasForeignKey(c => c.AdminId)
-            .OnDelete(DeleteBehavior.NoAction);
-
             //product chatroom relationship one to many
             builder.Entity<ChatRoom>()
             .HasOne(c => c.Product)
@@ -219,7 +212,7 @@ namespace backend.Data
             HasOne(l => l.ParentSection).
             WithMany(s => s.Lessons).
             HasForeignKey(l => l.ParentSectionId);
-            
+
 
             //quiz question relationship one to many
             builder.Entity<Quiz>()

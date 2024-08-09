@@ -13,17 +13,11 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/user")]
-    public class UserController : ControllerBase
+    public class UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-        private readonly SignInManager<ApplicationUser> _signinManager;
-        public UserController(UserManager<ApplicationUser> userManager,  SignInManager<ApplicationUser> signInManager)
-        {
-            _signinManager = signInManager;
-            _userManager = userManager;
-        }
-
+        private readonly SignInManager<ApplicationUser> _signinManager = signInManager;
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -44,6 +38,7 @@ namespace backend.Controller
                 {
                     UserName = user.UserName,
                     Email = user.Email,
+                    UserRoles = userRoles,
                 }
             );
         }
@@ -80,6 +75,7 @@ namespace backend.Controller
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
+                                UserRoles= userRoles
                             }
                         );
                     }

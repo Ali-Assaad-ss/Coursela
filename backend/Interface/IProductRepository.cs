@@ -10,7 +10,7 @@ namespace backend.Interface
     public interface IProductRepository
     {
         Task<List<AdminProductTableDto>> GetProducts(string adminId);
-        Task<Product?> GetProduct(int id, string adminId);
+        Task<Product?> GetAdminProduct(int id, string adminId);
         Task<Product?> DeleteProduct(int id, string adminId);
         Task<bool> AddImage(int id, string adminId);
         Task<Product?> UpdateProduct(int id, string adminId, UpdateProductDto product);

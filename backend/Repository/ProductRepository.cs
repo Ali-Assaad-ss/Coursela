@@ -36,12 +36,19 @@ namespace backend.Repository
                 Name = x.Product.Name,
                 Type = x.Product.GetType().Name == "DigitalProduct" ? "DigitalDownload" : x.Product.GetType().Name,
                 Members = x.Product.Purchases?.Count ?? 0,
-                Price=x.Product.Price,
+                Price = x.Product.Price,
             }).ToList();
         }
-        public async Task<Product?> GetProduct(int id,string adminId)
+        public async Task<Product?> GetAdminProduct(int id, string adminId)
         {
             var offers = await _context.Offers.Where(x => x.AdminId == adminId).Include(o => o.Product).Where(x => x.ProductId == id).FirstOrDefaultAsync();
+            if (offers == null)
+                return null;
+            return offers.Product;
+        }
+        public async Task<Product?> GetUserProduct(int id, string userId)
+        {
+            var offers = await _context.Purchases.Where(x => x.UserId == userId).Include(o => o.Product).Where(x => x.ProductId == id).FirstOrDefaultAsync();
             if (offers == null)
                 return null;
             return offers.Product;
@@ -49,12 +56,12 @@ namespace backend.Repository
         public async Task<Product?> DeleteProduct(int id, string adminId)
 
         {
-            var product = await GetProduct(id,adminId);
+            var product = await GetAdminProduct(id, adminId);
             if (product != null)
             {
                 if (product.GetType().Name == "Course")
                 {
-                    var course= await _context.Courses.Include(x=>x.Section).ThenInclude(s=>s.Lessons).Where(x=>x.Id==product.Id).FirstOrDefaultAsync();
+                    var course = await _context.Courses.Include(x => x.Section).ThenInclude(s => s.Lessons).Where(x => x.Id == product.Id).FirstOrDefaultAsync();
                     if (!course.Section.Lessons.IsNullOrEmpty())
                     {
                         _context.Lessons.RemoveRange(course.Section.Lessons);
@@ -72,7 +79,7 @@ namespace backend.Repository
         //add image to product
         public async Task<bool> AddImage(int id, string adminId)
         {
-            var product = await GetProduct(id, adminId);
+            var product = await GetAdminProduct(id, adminId);
             if (product == null) return false;
             product.Image = true;
             await _context.SaveChangesAsync();
@@ -81,7 +88,7 @@ namespace backend.Repository
         //update product
         public async Task<Product?> UpdateProduct(int id, string adminId, UpdateProductDto product)
         {
-            var oldProduct = await GetProduct(id, adminId);
+            var oldProduct = await GetAdminProduct(id, adminId);
             if (oldProduct == null) return null;
             oldProduct.Name = product.Name;
             oldProduct.Price = product.Price;

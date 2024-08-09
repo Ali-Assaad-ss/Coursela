@@ -6,22 +6,18 @@ using System.Threading.Tasks;
 using backend.Data;
 using backend.Interface;
 using backend.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(ApplicationDBContext context) : IUserRepository
     {
-        private readonly ApplicationDBContext _context;
-        public UserRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        
-        }
+        private readonly ApplicationDBContext _context = context;
+
         public async Task<ApplicationUser> AddUser(ApplicationUser user)
         {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
         return user;
         }
-        }
-}
+}}
